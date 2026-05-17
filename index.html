@@ -872,7 +872,7 @@ function entryCard(e){
       const customerSegment = getCustomerSegment(text);
 
       const email = getLabeledValue(customerSegment, ["E-Mail", "Email", "Mail"]) || ((text.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i)||[])[0] || "");
-      const name = extractName(customerSegment);
+      const name = extractName(text) || extractName(customerSegment);
       const payout = getLabeledValue(customerSegment, ["Gewünschte Auszahlung", "Auszahlung", "Auszahlungsmethode"]) || "";
       const imgValue = getLabeledValue(customerSegment, ["Bilder-Link", "Bilder Link", "Bilderlink", "Bilderlink / Liste"]);
       const img = /^https?:\/\//i.test(imgValue) ? imgValue : ((text.match(/https?:\/\/[^\s<>"']+/i)||[])[0] || "");
