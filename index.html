@@ -776,15 +776,13 @@
       doc.rect(margin, y - 6, 174, 9, "F");
       doc.setFontSize(10);
       drawText(doc, "Position", margin + 2, y);
-      drawText(doc, "Menge", 145, y, { align: "right" });
-      drawText(doc, "Betrag", 192, y, { align: "right" });
+      drawText(doc, "Menge", 192, y, { align: "right" });
       y += 8;
 
       doc.setFont("helvetica", "normal");
       doc.setFontSize(10);
 
       const positions = getReceiptPositions(entry);
-      let shownPositionSum = 0;
 
       positions.forEach((pos, index) => {
         if(y > 254){
@@ -792,9 +790,7 @@
           y = 24;
         }
 
-        const titleLines = doc.splitTextToSize(sanitizePdfText(pos.title || "Position"), 112);
-        const amountValue = money(pos.amount);
-        shownPositionSum += amountValue;
+        const titleLines = doc.splitTextToSize(sanitizePdfText(pos.title || "Position"), 142);
 
         drawText(doc, titleLines[0], margin + 2, y);
         if(titleLines.length > 1){
@@ -804,23 +800,20 @@
           }
         }
 
-        drawText(doc, pos.qty ? String(pos.qty) : "-", 145, y, { align: "right" });
-        drawText(doc, amountValue ? moneyText(amountValue) : "-", 192, y, { align: "right" });
+        drawText(doc, pos.qty ? String(pos.qty) : "-", 192, y, { align: "right" });
         y += 7;
         doc.setDrawColor(230);
         doc.line(margin, y - 3, 192, y - 3);
       });
 
-      if(Math.abs(shownPositionSum - amount) > 0.01){
-        if(y > 250){
-          doc.addPage();
-          y = 24;
-        }
-        doc.setFont("helvetica", "bold");
-        drawText(doc, "Gesamtbetrag laut Angebot", margin + 2, y + 2);
-        drawText(doc, moneyText(amount), 192, y + 2, { align: "right" });
-        y += 9;
+      if(y > 250){
+        doc.addPage();
+        y = 24;
       }
+      doc.setFont("helvetica", "bold");
+      drawText(doc, "Finales Ankaufangebot gesamt", margin + 2, y + 2);
+      drawText(doc, moneyText(amount), 192, y + 2, { align: "right" });
+      y += 9;
 
       y = Math.max(y + 10, 258);
       if(y > 270){
