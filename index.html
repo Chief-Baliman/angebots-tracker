@@ -48,7 +48,7 @@
     .item-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}.mini{min-height:34px;padding:7px 10px;border-radius:999px;font-size:12px}
     .meta-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}.meta{background:var(--soft);border:1px solid #edf1f8;border-radius:14px;padding:9px;min-width:0}.meta span{display:block;color:var(--muted);font-size:11px;font-weight:850;margin-bottom:3px}.meta strong{display:block;color:var(--text);font-size:13px;overflow-wrap:anywhere}
     .status{display:inline-flex;border-radius:999px;padding:6px 10px;font-size:12px;font-weight:950;background:#eef3ff;color:var(--blue);white-space:nowrap}.status.accepted,.status.done{background:var(--good);color:#14532d}.status.problem,.status.declined{background:var(--bad);color:#991b1b}.status.waiting{background:var(--warn);color:#5f4100}
-    .detail{background:var(--soft);border:1px solid #edf1f8;border-radius:14px;padding:11px;color:var(--text);font-size:13px;line-height:1.45;white-space:pre-wrap}
+    .entry-details{display:grid;gap:10px}.detail{background:var(--soft);border:1px solid #edf1f8;border-radius:14px;padding:11px;color:var(--text);font-size:13px;line-height:1.45;white-space:pre-wrap}
     .split-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:4px}.split-table th,.split-table td{padding:9px 8px;border-bottom:1px solid #edf1f8;text-align:left}.split-table th{color:var(--blue);font-size:11px;text-transform:uppercase;background:#f4f7fc}.right{text-align:right!important;white-space:nowrap}
     .modal-backdrop{position:fixed;inset:0;background:rgba(2,6,23,.55);display:grid;place-items:center;padding:16px;z-index:20}.modal{width:min(760px,100%);background:#fff;border-radius:22px;border:1px solid var(--border);box-shadow:0 24px 80px rgba(0,0,0,.3);padding:18px}.modal textarea{min-height:300px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px}
     .toast{position:fixed;right:18px;bottom:18px;padding:12px 14px;background:#111827;color:#fff;border-radius:14px;box-shadow:0 12px 30px rgba(0,0,0,.22);font-size:14px;opacity:0;transform:translateY(12px);pointer-events:none;transition:opacity .2s ease,transform .2s ease;z-index:50}.toast.show{opacity:1;transform:translateY(0)}
@@ -364,27 +364,78 @@
     }
 
     function entryCard(e){
-      const div=document.createElement("article"); div.className="item";
+      const div=document.createElement("article"); 
+      div.className="item";
       const statusClass=statusToClass(e.status);
+      const detailsId = "details-" + (e.id || Math.random().toString(36).slice(2));
+
       if(activeTab==="bulk"){
         div.innerHTML = `
-          <div class="item-head"><div class="item-title"><strong>${esc(e.name||"Unbenannt")}</strong><span>${esc(e.email||"Keine E-Mail")} · ${formatDate(e.date)} · Bulk</span></div><div class="item-actions"><span class="status ${statusClass}">${esc(e.status||"Neu")}</span><button class="mini secondary" data-a="copy">Antwort</button><button class="mini blue" data-a="edit">Bearbeiten</button></div></div>
-          <div class="meta-grid"><div class="meta"><span>Karten</span><strong>${num.format(intVal(e.cardCount))}</strong></div><div class="meta"><span>Rechnerwert</span><strong>${euro.format(money(e.calcValue))}</strong></div><div class="meta"><span>Score</span><strong>${esc(e.score||"–")}</strong></div><div class="meta"><span>Empfohlen</span><strong>${euro.format(money(e.recommendedOffer))}</strong></div><div class="meta"><span>Dein Angebot</span><strong>${euro.format(money(e.ownOffer))}</strong></div></div>
-          ${renderSplit(e.splitDetails)}
-          ${e.issues?`<div class="detail"><strong>Auffälligkeiten:</strong>\n${esc(e.issues)}</div>`:""}
-          ${e.nextStep?`<div class="detail"><strong>Nächster Schritt:</strong> ${esc(e.nextStep)}</div>`:""}`;
+          <div class="item-head">
+            <div class="item-title">
+              <strong>${esc(e.name||"Unbenannt")}</strong>
+              <span>${esc(e.email||"Keine E-Mail")} · ${formatDate(e.date)} · Bulk</span>
+            </div>
+            <div class="item-actions">
+              <span class="status ${statusClass}">${esc(e.status||"Neu")}</span>
+              <button class="mini secondary" data-a="toggle" type="button">Details</button>
+              <button class="mini secondary" data-a="copy" type="button">Antwort</button>
+              <button class="mini blue" data-a="edit" type="button">Bearbeiten</button>
+            </div>
+          </div>
+          <div class="meta-grid">
+            <div class="meta"><span>Karten</span><strong>${num.format(intVal(e.cardCount))}</strong></div>
+            <div class="meta"><span>Rechnerwert</span><strong>${euro.format(money(e.calcValue))}</strong></div>
+            <div class="meta"><span>Score</span><strong>${esc(e.score||"–")}</strong></div>
+            <div class="meta"><span>Empfohlen</span><strong>${euro.format(money(e.recommendedOffer))}</strong></div>
+            <div class="meta"><span>Dein Angebot</span><strong>${euro.format(money(e.ownOffer))}</strong></div>
+          </div>
+          <div class="entry-details hidden" id="${detailsId}">
+            ${renderSplit(e.splitDetails)}
+            ${e.issues?`<div class="detail"><strong>Auffälligkeiten:</strong>\n${esc(e.issues)}</div>`:""}
+            ${e.shippingStatus?`<div class="detail"><strong>Versandstatus:</strong> ${esc(e.shippingStatus)}</div>`:""}
+            ${e.payoutMethod?`<div class="detail"><strong>Auszahlung:</strong> ${esc(e.payoutMethod)}</div>`:""}
+            ${e.nextStep?`<div class="detail"><strong>Nächster Schritt:</strong> ${esc(e.nextStep)}</div>`:""}
+            ${e.note?`<div class="detail"><strong>Notiz:</strong>\n${esc(e.note)}</div>`:""}
+          </div>`;
       }else{
         div.innerHTML = `
-          <div class="item-head"><div class="item-title"><strong>${esc(e.name||"Unbenannt")}</strong><span>${esc(e.email||"Keine E-Mail")} · ${formatDate(e.date)} · ${esc(e.requestType||"Gemischt")}</span></div><div class="item-actions"><span class="status ${statusClass}">${esc(e.status||"Neu")}</span><button class="mini secondary" data-a="copy">Antwort</button><button class="mini blue" data-a="edit">Bearbeiten</button></div></div>
-          <div class="meta-grid"><div class="meta"><span>Artikel</span><strong>${num.format(intVal(e.itemCount))}</strong></div><div class="meta"><span>Wunschpreis</span><strong>${euro.format(money(e.wantedPrice))}</strong></div><div class="meta"><span>Bester Gesamtpreis</span><strong>${euro.format(money(e.bestTotalPrice))}</strong></div><div class="meta"><span>Dein Angebot</span><strong>${euro.format(money(e.ownOffer))}</strong></div><div class="meta"><span>Auszahlung</span><strong>${esc(e.payoutMethod||"Offen")}</strong></div></div>
-          ${e.description?`<div class="detail"><strong>Beschreibung:</strong>\n${esc(e.description)}</div>`:""}
-          ${e.productDetails?`<div class="detail"><strong>Produktdetails:</strong>\n${esc(e.productDetails)}</div>`:""}
-          ${e.missingInfo?`<div class="detail"><strong>Fehlende Infos:</strong>\n${esc(e.missingInfo)}</div>`:""}
-          ${e.imageLink?`<div class="detail"><strong>Bilderlink:</strong> ${esc(e.imageLink)}</div>`:""}
-          ${e.nextStep?`<div class="detail"><strong>Nächster Schritt:</strong> ${esc(e.nextStep)}</div>`:""}`;
+          <div class="item-head">
+            <div class="item-title">
+              <strong>${esc(e.name||"Unbenannt")}</strong>
+              <span>${esc(e.email||"Keine E-Mail")} · ${formatDate(e.date)} · ${esc(e.requestType||"Gemischt")}</span>
+            </div>
+            <div class="item-actions">
+              <span class="status ${statusClass}">${esc(e.status||"Neu")}</span>
+              <button class="mini secondary" data-a="toggle" type="button">Details</button>
+              <button class="mini secondary" data-a="copy" type="button">Antwort</button>
+              <button class="mini blue" data-a="edit" type="button">Bearbeiten</button>
+            </div>
+          </div>
+          <div class="meta-grid">
+            <div class="meta"><span>Artikel</span><strong>${num.format(intVal(e.itemCount))}</strong></div>
+            <div class="meta"><span>Wunschpreis</span><strong>${euro.format(money(e.wantedPrice))}</strong></div>
+            <div class="meta"><span>Bester Gesamtpreis</span><strong>${euro.format(money(e.bestTotalPrice))}</strong></div>
+            <div class="meta"><span>Dein Angebot</span><strong>${euro.format(money(e.ownOffer))}</strong></div>
+            <div class="meta"><span>Auszahlung</span><strong>${esc(e.payoutMethod||"Offen")}</strong></div>
+          </div>
+          <div class="entry-details hidden" id="${detailsId}">
+            ${e.description?`<div class="detail"><strong>Beschreibung:</strong>\n${esc(e.description)}</div>`:""}
+            ${e.productDetails?`<div class="detail"><strong>Produktdetails:</strong>\n${esc(e.productDetails)}</div>`:""}
+            ${e.missingInfo?`<div class="detail"><strong>Fehlende Infos:</strong>\n${esc(e.missingInfo)}</div>`:""}
+            ${e.imageLink?`<div class="detail"><strong>Bilderlink:</strong> ${esc(e.imageLink)}</div>`:""}
+            ${e.nextStep?`<div class="detail"><strong>Nächster Schritt:</strong> ${esc(e.nextStep)}</div>`:""}
+            ${e.note?`<div class="detail"><strong>Notiz:</strong>\n${esc(e.note)}</div>`:""}
+          </div>`;
       }
+
       $("[data-a='edit']",div).addEventListener("click",()=>fillForm(e));
       $("[data-a='copy']",div).addEventListener("click",()=>copy(buildReply(e)));
+      $("[data-a='toggle']",div).addEventListener("click",(event)=>{
+        const box = div.querySelector(".entry-details");
+        const isHidden = box.classList.toggle("hidden");
+        event.currentTarget.textContent = isHidden ? "Details" : "Schließen";
+      });
       return div;
     }
 
@@ -396,11 +447,17 @@
 
     function parseSplitRows(text){
       if(!text) return [];
+
       return String(text).split(/\n+/).map(line=>line.trim()).filter(Boolean).map(line=>{
-        const m=line.match(/^(.*?)(?::|\|)\s*([\d.]+)?(?:\s*(?:x|Stk\.?|Karten))?.*?(?:=\s*)?([\d.,]+)\s*€?$/i);
+        let m = line.match(/^(.*?):\s*([\d.]+)\s*\|\s*([\d.,]+)\s*€?$/i);
         if(m) return {label:m[1].trim(), qty:intVal(m[2]), total:parseEuro(m[3])};
-        const m2=line.match(/^(.*?)\s*:\s*([\d.]+)$/);
-        if(m2) return {label:m2[1].trim(), qty:intVal(m2[2]), total:0};
+
+        m = line.match(/^(.*?)\s*:\s*([\d.]+)\s*x\s*[\d.,]+\s*€\s*=\s*([\d.,]+)\s*€/i);
+        if(m) return {label:m[1].trim(), qty:intVal(m[2]), total:parseEuro(m[3])};
+
+        m = line.match(/^(.*?)\s*:\s*([\d.]+)\s*(?:Karten|Stk\.?|Stück)?\s*$/i);
+        if(m) return {label:m[1].trim(), qty:intVal(m[2]), total:0};
+
         return {label:line, qty:0, total:0};
       });
     }
