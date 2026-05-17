@@ -742,6 +742,33 @@ function entryCard(e){
       };
     }
 
+    function getCompactValue(text, labels){
+      const compact = String(text || "").replace(/\s+/g, " ").trim();
+      const stopLabels = [
+        "Name", "E-Mail", "Email", "Telefon", "Gewünschte Auszahlung", "Auszahlung", "Auszahlungsmethode",
+        "Bester Gesamtpreis bei Komplettabnahme", "Gesamtpreis Bei Komplettabnahme", "Bilder-Link", "Bilder Link",
+        "Zusätzliche Nachricht", "Anzahl Artikel", "Wunschpreis gesamt aus Einzelpositionen",
+        "Angebotene Artikel", "Artikel 1", "Artikel 2", "Artikel 3", "Hinweis"
+      ];
+
+      for(const label of labels){
+        const escaped = label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        const otherStops = stopLabels
+          .filter(stop => stop.toLowerCase() !== label.toLowerCase())
+          .map(stop => stop.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+          .join("|");
+
+        const regex = new RegExp(`${escaped}\\s*:\\s*(.*?)(?=\\s+(?:${otherStops})\\s*:|$)`, "i");
+        const match = compact.match(regex);
+        if(match && match[1]){
+          const value = match[1].trim();
+          if(value && !/^nicht angegeben$/i.test(value)) return value;
+        }
+      }
+
+      return "";
+    }
+
     function getLabeledValue(text, labels) {
       const lines = String(text || "").split(/\r?\n/).map(line => line.trim());
       const normalizedLabels = labels.map(label => label.toLowerCase());
@@ -756,41 +783,131 @@ function entryCard(e){
               const candidate = lines[j].trim();
               if(!candidate) continue;
               if(/^[a-zäöüß\s/()&.-]+:\s*$/i.test(candidate)) break;
-              return candidate;
+              if(!/^nicht angegeben$/i.test(candidate)) return candidate;
             }
           }
 
           if(lower.startsWith(label + ":")){
             const inline = current.slice(current.indexOf(":") + 1).trim();
-            if(inline) return inline;
+            if(inline && !/^nicht angegeben$/i.test(inline)) return inline;
           }
         }
       }
 
+      return getCompactValue(text, labels);
+    }
+
+    function getCustomerSegment(text){
+      const raw = String(text || "");
+      const match = raw.match(/Kundendaten\s*:\s*([\s\S]*?)(?=Anzahl\s+Artikel|Angebotene\s+Artikel|Artikel\s+1\s*:|Hinweis\s*:|$)/i);
+      return match ? match[1] : raw;
+    }
+
+    function getArticleField(block, labels){
+      for(const label of labels){
+        const escaped = label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        const regex = new RegExp(`${escaped}\\s*:\\s*(.*?)(?=\\s+-\\s*[A-ZÄÖÜa-zäöüß0-9 /()&.-]+\\s*:|\\s+Artikel\\s+\\d+\\s*:|$)`, "i");
+        const match = String(block || "").match(regex);
+        if(match && match[1]){
+          const value = match[1].trim();
+          if(value && !/^nicht angegeben$/i.test(value)) return value;
+        }
+      }
       return "";
+    }
+
+    function normalizeQty(value){
+      const n = intVal(value);
+      return n > 0 ? String(n) : "1";
+    }
+
+    function parseCollectionArticles(text){
+      const raw = String(text || "").replace(/\u00a0/g, " ");
+      const items = [];
+      const articleRegex = /Artikel\s+(\d+)\s*:\s*([\s\S]*?)(?=\s+Artikel\s+\d+\s*:|\s+Hinweis\s*:|\s+Name\s*:|\s+E-Mail\s*:|$)/gi;
+
+      let match;
+      while((match = articleRegex.exec(raw)) !== null){
+        const block = match[2].trim();
+        const blockNorm = norm(block);
+        let type = "Sonstiges";
+
+        if(blockNorm.includes("slab") || blockNorm.includes("grading")) type = "Slab";
+        else if(blockNorm.includes("sealed") || blockNorm.includes("etb") || blockNorm.includes("top-trainer") || blockNorm.includes("display") || blockNorm.includes("booster")) type = "Sealed";
+        else if(blockNorm.includes("einzelkarte")) type = "Einzelkarte";
+        else if(blockNorm.includes("sammlung")) type = "Sammlung";
+
+        const cardName = getArticleField(block, ["Kartenname", "Name / Produkt", "Name"]);
+        const productName = getArticleField(block, ["Name / Set", "Produktname", "Name"]);
+        const set = getArticleField(block, ["Set / Edition", "Set", "Edition", "Name / Set"]);
+        const cardNo = getArticleField(block, ["Kartennummer", "Kartennummer optional"]);
+        const cert = getArticleField(block, ["Zertifikatnummer optional", "Zertifikatnummer", "Cert", "Cert-Nummer"]);
+        const gradingCompany = getArticleField(block, ["Grading-Firma", "Grading Firma"]);
+        const grade = getArticleField(block, ["Grade"]);
+        const language = getArticleField(block, ["Sprache / Herkunft", "Sprache", "Herkunft"]);
+        const condition = getArticleField(block, ["Zustand Verpackung", "Zustand"]);
+        const qty = getArticleField(block, ["Menge"]);
+        const wanted = getArticleField(block, ["Preisvorstellung", "Wunschpreis"]);
+        const note = getArticleField(block, ["Hinweise", "Hinweis"]);
+
+        items.push({
+          type,
+          title: type === "Sealed" ? (productName || cardName || "Sealed Produkt") : (cardName || productName || type),
+          set: set || "",
+          cardNumber: [cardNo, cert ? "Cert: " + cert : ""].filter(Boolean).join(" | "),
+          language: language || "",
+          condition: condition || "",
+          grade: [gradingCompany, grade].filter(Boolean).join(" "),
+          quantity: normalizeQty(qty),
+          wantedPrice: wanted ? String(parseEuro(wanted) || wanted).replace(".", ",") : "",
+          note: note || ""
+        });
+      }
+
+      return items;
     }
 
     function parseCollectionMail(text){
       const compact = text.replace(/\s+/g," ").trim();
-      const email = getLabeledValue(text, ["E-Mail", "Email", "Mail"]) || ((text.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i)||[])[0] || "");
-      const name = extractName(text);
-      const payout = getLabeledValue(text, ["Auszahlung", "Auszahlungsmethode", "Gewünschte Auszahlung"]) || "";
-      const img = (text.match(/https?:\/\/[^\s<>"']+/i)||[])[0] || "";
-      const wanted = parseEuro(getLabeledValue(text, ["Wunschpreis gesamt", "Wunschpreis", "Gesamt-Wunschpreis"]) || findAfter(compact, /wunschpreis(?:\s+gesamt)?(?:\s+aus\s+einzelpositionen)?\s*:\s*([\d.,]+\s*€?)/i));
-      const best = parseEuro(getLabeledValue(text, ["Bester Gesamtpreis", "Bester Gesamtpreis bei Komplettabnahme", "Gesamtpreis bei Komplettabnahme"]) || findAfter(compact, /(?:bester\s+gesamtpreis|gesamtpreis\s+bei\s+komplettabnahme).*?:\s*([\d.,]+\s*€?)/i));
-      const itemCount = intVal(getLabeledValue(text, ["Artikelanzahl", "Anzahl Artikel"]) || findAfter(compact, /(?:anzahl\s+artikel|artikelanzahl)\s*:\s*([\d.]+)/i));
-      const requestType = getLabeledValue(text, ["Anfragetyp"]) || detectCollectionType(text);
+      const customerSegment = getCustomerSegment(text);
+
+      const email = getLabeledValue(customerSegment, ["E-Mail", "Email", "Mail"]) || ((text.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i)||[])[0] || "");
+      const name = extractName(customerSegment);
+      const payout = getLabeledValue(customerSegment, ["Gewünschte Auszahlung", "Auszahlung", "Auszahlungsmethode"]) || "";
+      const imgValue = getLabeledValue(customerSegment, ["Bilder-Link", "Bilder Link", "Bilderlink", "Bilderlink / Liste"]);
+      const img = /^https?:\/\//i.test(imgValue) ? imgValue : ((text.match(/https?:\/\/[^\s<>"']+/i)||[])[0] || "");
+
+      const wanted = parseEuro(
+        getLabeledValue(text, ["Wunschpreis gesamt aus Einzelpositionen", "Wunschpreis gesamt", "Wunschpreis", "Gesamt-Wunschpreis"]) ||
+        findAfter(compact, /wunschpreis(?:\s+gesamt)?(?:\s+aus\s+einzelpositionen)?\s*:\s*([\d.,]+\s*€?)/i)
+      );
+
+      const best = parseEuro(
+        getLabeledValue(text, ["Bester Gesamtpreis bei Komplettabnahme", "Gesamtpreis Bei Komplettabnahme", "Bester Gesamtpreis"]) ||
+        findAfter(compact, /(?:bester\s+gesamtpreis|gesamtpreis\s+bei\s+komplettabnahme).*?:\s*([\d.,]+\s*€?)/i)
+      );
+
+      const items = parseCollectionArticles(text);
+      const itemCountFromMail = intVal(getLabeledValue(text, ["Anzahl Artikel", "Artikelanzahl"]) || findAfter(compact, /(?:anzahl\s+artikel|artikelanzahl)\s*:\s*([\d.]+)/i));
+      const requestType = items.length > 1
+        ? (new Set(items.map(item => item.type)).size > 1 ? "Gemischt" : items[0].type)
+        : (items[0]?.type || getLabeledValue(text, ["Anfragetyp"]) || detectCollectionType(text));
+
+      const additionalMessage = getLabeledValue(text, ["Zusätzliche Nachricht", "Nachricht"]);
 
       return {
-        name, email, date:today(), status:"Neu",
+        name,
+        email,
+        date:today(),
+        status:"Neu",
         requestType,
-        itemCount:itemCount || "",
+        itemCount:itemCountFromMail || items.reduce((sum, item) => sum + (intVal(item.quantity) || 1), 0) || "",
         wantedPrice:wanted || "",
         bestTotalPrice:best || "",
         payoutMethod:payout || "",
         imageLink:img,
-        description:firstMeaningfulLines(text, 4),
-        itemsJson:"[]",
+        description:additionalMessage || firstMeaningfulLines(text, 3),
+        itemsJson:JSON.stringify(items),
         missingInfo: norm(text).includes("nicht angegeben") ? "Einige Felder wurden als nicht angegeben erkannt. Bitte Details prüfen." : "",
         sourceText:text,
         nextStep:"Anfrage prüfen"
