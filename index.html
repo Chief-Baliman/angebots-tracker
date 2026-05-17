@@ -915,10 +915,37 @@ function entryCard(e){
     }
 
     function extractName(text){
+      const raw = String(text || "");
+
+      const directPatterns = [
+        /Kundendaten\s*:\s*Name\s*:\s*(.*?)(?=\s+E-Mail\s*:|\s+Email\s*:|\s+Telefon\s*:|$)/i,
+        /(?:^|\n|\r)\s*Name\s*:\s*([^\n\r]+)/i,
+        /(?:^|\n|\r)\s*Kundenname\s*:\s*([^\n\r]+)/i
+      ];
+
+      for(const pattern of directPatterns){
+        const match = raw.match(pattern);
+        if(match && match[1]){
+          const value = match[1].trim().replace(/^["']|["']$/g, "");
+          if(value && !value.includes("@") && !/^nicht angegeben$/i.test(value)) return value;
+        }
+      }
+
+      const lines = raw.split(/\r?\n/).map(line => line.trim());
+      for(let i = 0; i < lines.length; i++){
+        if(/^name\s*:$/i.test(lines[i]) || /^kundenname\s*:$/i.test(lines[i])){
+          for(let j = i + 1; j < Math.min(lines.length, i + 4); j++){
+            const candidate = lines[j].trim();
+            if(!candidate) continue;
+            if(/^[a-zäöüß\s/()&.-]+:\s*$/i.test(candidate)) break;
+            if(!candidate.includes("@") && !/^nicht angegeben$/i.test(candidate)) return candidate;
+          }
+        }
+      }
+
       const labeled = getLabeledValue(text, ["Name", "Kundenname"]);
       if(labeled && !labeled.includes("@")) return labeled.replace(/^["']|["']$/g, "").trim();
 
-      const raw = String(text || "");
       const patterns=[
         /(?:^|\n)\s*from\s*:\s*("?)([^"<\n\r]+)\1\s*<[^>]+>/i,
         /(?:^|\n)\s*von\s*:\s*("?)([^"<\n\r]+)\1\s*<[^>]+>/i
