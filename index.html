@@ -686,6 +686,36 @@
       doc.text(sanitizePdfText(text), x, y, options);
     }
 
+    function getRecipientLine(entry){
+      const parts = [entry.name || "Nicht angegeben"];
+
+      if(entry.email) parts.push(entry.email);
+      if(entry.payoutMethod) parts.push(entry.payoutMethod);
+
+      if(entry.shippingStatus && String(entry.shippingStatus).toLowerCase().includes("selbst")) {
+        parts.push("Versand selbst");
+      }
+
+      return parts.filter(Boolean).join(", ");
+    }
+
+    function quantityText(pos){
+      const qty = String(pos.qty || "").trim();
+      if(!qty) return "-";
+
+      const label = String(pos.title || "").toLowerCase();
+
+      if(label.includes("sleeve")) return qty + " Sleeves";
+      if(label.includes("sammelmappe") || label.includes("binder")) return qty + " Sammelmappen";
+      if(label.includes("display")) return qty + " Displays";
+      if(label.includes("etb") || label.includes("ttb")) return qty + " Boxen";
+      if(label.includes("slab")) return qty + " Slabs";
+      if(label.includes("sealed")) return qty + " Produkte";
+      if(label.includes("karte") || label.includes("pokemon") || label.includes("pokémon") || label.includes("trainer") || label.includes("holo") || label.includes("energie")) return qty + " Karten";
+
+      return qty + " Stück";
+    }
+
     function createReceipt(entry){
       if(!window.jspdf || !window.jspdf.jsPDF){
         showToast("PDF-Bibliothek konnte nicht geladen werden");
@@ -708,6 +738,7 @@
 
       const purchaseDate = entry.date || new Date().toISOString().slice(0,10);
       const sellerName = entry.name || "Nicht angegeben";
+      const recipientLine = getRecipientLine(entry);
       const subject = activeTab === "bulk" ? "Pokemon Bulk Sammlung" : (entry.requestType || "Sammlung / Einzelankauf");
       const reason = "Privatkauf";
 
@@ -752,21 +783,26 @@
       }
 
       fieldRow(78, "Vorgang", subject);
-      drawText(doc, "Datum des Kaufs/", margin, 95);
-      drawText(doc, "Inanspruchnahme der Leistung", margin, 102);
+      drawText(doc, "Datum des Kaufs", margin, 98);
       doc.setFillColor(...grey);
-      doc.rect(73, 94, 101, 9, "F");
-      drawText(doc, purchaseDate, 76, 101);
+      doc.rect(73, 91, 101, 9, "F");
+      drawText(doc, purchaseDate, 76, 98);
 
       drawText(doc, "Empfänger", margin, 120);
-      drawText(doc, sellerName, 53, 120);
-      doc.line(53, 122, 174, 122);
+      const recipientLines = doc.splitTextToSize(sanitizePdfText(recipientLine), 120);
+      drawText(doc, recipientLines[0], 53, 120);
+      if(recipientLines.length > 1){
+        doc.setFontSize(10);
+        drawText(doc, recipientLines.slice(1).join(", "), 53, 126);
+        doc.setFontSize(13);
+      }
+      doc.line(53, 128, 174, 128);
 
-      drawText(doc, "Grund", margin, 134);
-      drawText(doc, reason, 53, 134);
-      doc.line(53, 136, 174, 136);
+      drawText(doc, "Grund", margin, 142);
+      drawText(doc, reason, 53, 142);
+      doc.line(53, 144, 174, 144);
 
-      let y = 154;
+      let y = 162;
       doc.setFont("helvetica", "bold");
       doc.setFontSize(14);
       drawText(doc, "Ankaufspositionen", margin, y);
@@ -776,7 +812,7 @@
       doc.rect(margin, y - 6, 174, 9, "F");
       doc.setFontSize(10);
       drawText(doc, "Position", margin + 2, y);
-      drawText(doc, "Menge", 192, y, { align: "right" });
+      drawText(doc, "Menge / Einheit", 158, y, { align: "right" });
       y += 8;
 
       doc.setFont("helvetica", "normal");
@@ -790,7 +826,7 @@
           y = 24;
         }
 
-        const titleLines = doc.splitTextToSize(sanitizePdfText(pos.title || "Position"), 142);
+        const titleLines = doc.splitTextToSize(sanitizePdfText(pos.title || "Position"), 122);
 
         drawText(doc, titleLines[0], margin + 2, y);
         if(titleLines.length > 1){
@@ -800,7 +836,7 @@
           }
         }
 
-        drawText(doc, pos.qty ? String(pos.qty) : "-", 192, y, { align: "right" });
+        drawText(doc, quantityText(pos), 158, y, { align: "right" });
         y += 7;
         doc.setDrawColor(230);
         doc.line(margin, y - 3, 192, y - 3);
