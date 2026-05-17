@@ -102,7 +102,7 @@
         <form id="entryForm">
           <input type="hidden" id="entryId">
           <div class="form-grid" id="bulkForm">
-            <div class="field"><label>Name</label><input data-field="name" required></div>
+            <div class="field"><label>Name</label><input data-field="name"></div>
             <div class="field"><label>E-Mail</label><input data-field="email" type="email"></div>
             <div class="field"><label>Datum</label><input data-field="date" type="date"></div>
             <div class="field"><label>Status</label><select data-field="status"></select></div>
@@ -121,7 +121,7 @@
           </div>
 
           <div class="form-grid hidden" id="collectionsForm">
-            <div class="field"><label>Name</label><input data-field="name" required></div>
+            <div class="field"><label>Name</label><input data-field="name"></div>
             <div class="field"><label>E-Mail</label><input data-field="email" type="email"></div>
             <div class="field"><label>Datum</label><input data-field="date" type="date"></div>
             <div class="field"><label>Status</label><select data-field="status"></select></div>
@@ -214,6 +214,7 @@
 
     function init(){
       fillStatuses();
+      setInactiveFieldsDisabled();
       resetForm();
       if(localStorage.getItem("ccOfferTrackerUnlocked")==="yes") unlock();
       els.loginBtn.addEventListener("click", checkPin);
@@ -255,11 +256,18 @@
       }catch(err){ console.error(err); els.sync.textContent="Firebase-Fehler"; showToast("Firebase-Fehler"); }
     }
 
+    function setInactiveFieldsDisabled(){
+      const bulkActive = activeTab === "bulk";
+      $$("input, select, textarea", els.bulkForm).forEach(field => field.disabled = !bulkActive);
+      $$("input, select, textarea", els.collectionsForm).forEach(field => field.disabled = bulkActive);
+    }
+
     function switchTab(tab){
       activeTab = tab;
       els.tabs.forEach(t => t.classList.toggle("active", t.dataset.tab===tab));
       els.bulkForm.classList.toggle("hidden", tab!=="bulk");
       els.collectionsForm.classList.toggle("hidden", tab==="bulk");
+      setInactiveFieldsDisabled();
       els.formTitle.textContent = tab==="bulk" ? "Bulk-Anfrage erfassen" : "Sammlungsangebot erfassen";
       els.listTitle.textContent = tab==="bulk" ? "Bulk-Anfragen" : "Sammlungen / Einzelankauf";
       resetForm(); render();
