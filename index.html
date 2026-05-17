@@ -175,6 +175,7 @@
 
   <div class="toast" id="toast">Gespeichert</div>
 
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
     import { getDatabase, ref, onValue, set, update, remove, push } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-database.js";
@@ -423,6 +424,7 @@
               <select class="quick-status ${statusClass}" data-a="status">${STATUSES.map(s => `<option ${s === (e.status||"Neu") ? "selected" : ""}>${esc(s)}</option>`).join("")}</select>
               <button class="mini secondary" data-a="toggle" type="button">Details</button>
               <button class="mini secondary" data-a="copy" type="button">Antwort</button>
+              <button class="mini green" data-a="receipt" type="button">Eigenbeleg</button>
               <button class="mini blue" data-a="edit" type="button">Bearbeiten</button>
             </div>
           </div>
@@ -452,6 +454,7 @@
               <select class="quick-status ${statusClass}" data-a="status">${STATUSES.map(s => `<option ${s === (e.status||"Neu") ? "selected" : ""}>${esc(s)}</option>`).join("")}</select>
               <button class="mini secondary" data-a="toggle" type="button">Details</button>
               <button class="mini secondary" data-a="copy" type="button">Antwort</button>
+              <button class="mini green" data-a="receipt" type="button">Eigenbeleg</button>
               <button class="mini blue" data-a="edit" type="button">Bearbeiten</button>
             </div>
           </div>
@@ -474,6 +477,7 @@
 
       $("[data-a='edit']",div).addEventListener("click",()=>fillForm(e));
       $("[data-a='copy']",div).addEventListener("click",()=>copy(buildReply(e)));
+      $("[data-a='receipt']",div).addEventListener("click",()=>createReceipt(e));
       $("[data-a='status']",div).addEventListener("change",(event)=>quickUpdateStatus(e.id, event.target.value));
       $("[data-a='toggle']",div).addEventListener("click",(event)=>{
         const box = div.querySelector(".entry-details");
@@ -618,6 +622,233 @@
     function detectCollectionType(text){ const n=norm(text); if(n.includes("slab")) return "Slab"; if(n.includes("sealed")||n.includes("display")||n.includes("etb")) return "Sealed"; if(n.includes("einzelkarte")) return "Einzelkarte"; if(n.includes("sammlung")) return "Sammlung"; return "Gemischt"; }
     function firstMeaningfulLines(text, max){ return text.split(/\n+/).map(x=>x.trim()).filter(x=>x && !x.includes("@")).slice(0,max).join("\n"); }
     function buildSplitFromPositions(positions){ return positions.map(p => `${p.label}: ${p.qty || 0} | ${euro.format(p.total || 0)}`).join("\n"); }
+
+    function sanitizePdfText(value){
+      return String(value || "")
+        .replace(/Pokémon/g, "Pokemon")
+        .replace(/pokémon/g, "Pokemon")
+        .replace(/–|—/g, "-")
+        .replace(/€/g, "EUR")
+        .replace(/\t/g, " ");
+    }
+
+    function moneyText(value){
+      return euro.format(money(value)).replace("€", "EUR");
+    }
+
+    function promptReceiptNumber(entry){
+      const date = entry.date || new Date().toISOString().slice(0,10);
+      const compactDate = String(date).replaceAll("-", "").slice(2);
+      const fallback = `${compactDate}-001`;
+      return window.prompt("Belegnummer eingeben", fallback);
+    }
+
+    function getReceiptPositions(entry){
+      if(activeTab === "bulk"){
+        const rows = parseSplitRows(entry.splitDetails || "");
+        if(rows.length){
+          return rows.map(row => ({
+            title: row.label,
+            qty: row.qty || "",
+            amount: row.total || 0
+          }));
+        }
+
+        return [{
+          title: "Pokemon Bulk Sammlung",
+          qty: intVal(entry.cardCount) || "",
+          amount: money(entry.ownOffer)
+        }];
+      }
+
+      const lines = String(entry.productDetails || entry.description || "Sammlung / Einzelankauf")
+        .split(/\n+/)
+        .map(line => line.trim())
+        .filter(Boolean)
+        .slice(0, 12);
+
+      if(lines.length){
+        return lines.map((line, index) => ({
+          title: line,
+          qty: index === 0 && entry.itemCount ? intVal(entry.itemCount) : "",
+          amount: 0
+        }));
+      }
+
+      return [{
+        title: entry.requestType || "Sammlung / Einzelankauf",
+        qty: intVal(entry.itemCount) || "",
+        amount: money(entry.ownOffer)
+      }];
+    }
+
+    function drawText(doc, text, x, y, options = {}){
+      doc.text(sanitizePdfText(text), x, y, options);
+    }
+
+    function createReceipt(entry){
+      if(!window.jspdf || !window.jspdf.jsPDF){
+        showToast("PDF-Bibliothek konnte nicht geladen werden");
+        return;
+      }
+
+      const receiptNo = promptReceiptNumber(entry);
+      if(!receiptNo) return;
+
+      const amount = money(entry.ownOffer || entry.recommendedOffer || entry.calcValue || entry.wantedPrice || entry.bestTotalPrice);
+      if(amount <= 0){
+        if(!confirm("Für diesen Eintrag ist kein Angebotsbetrag hinterlegt. Eigenbeleg trotzdem erstellen?")) return;
+      }
+
+      const doc = new window.jspdf.jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+      const pageWidth = 210;
+      const margin = 18;
+      const rightX = 198;
+      const grey = [218, 218, 218];
+
+      const purchaseDate = entry.date || new Date().toISOString().slice(0,10);
+      const sellerName = entry.name || "Nicht angegeben";
+      const subject = activeTab === "bulk" ? "Pokemon Bulk Sammlung" : (entry.requestType || "Sammlung / Einzelankauf");
+      const reason = "Privatkauf";
+
+      doc.setFont("helvetica", "bolditalic");
+      doc.setFontSize(30);
+      drawText(doc, "Eigenbeleg", margin, 24);
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(13);
+      drawText(doc, "Nr.", margin, 42);
+      doc.setLineWidth(0.4);
+      doc.line(33, 43, 66, 43);
+      drawText(doc, receiptNo, 33, 42);
+
+      function amountRow(y, label, value, bold = false){
+        doc.setFillColor(...grey);
+        doc.rect(88, y - 7, 86, 9, "F");
+        doc.setFont("helvetica", bold ? "bolditalic" : "italic");
+        doc.setFontSize(13);
+        drawText(doc, label, 91, y);
+        doc.setFont("helvetica", bold ? "bold" : "normal");
+        drawText(doc, value, 171, y, { align: "right" });
+      }
+
+      amountRow(22, "Ausgaben Netto", moneyText(amount));
+      amountRow(34, "zzgl. 0 % MwSt.", "0,00 EUR");
+      amountRow(46, "Ausgaben Gesamt", moneyText(amount), true);
+
+      doc.setDrawColor(0);
+      doc.setLineWidth(0.5);
+      doc.line(margin, 58, 174, 58);
+      doc.line(142, 62, 174, 62);
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(13);
+
+      function fieldRow(y, label, value, wide = false){
+        drawText(doc, label, margin, y);
+        doc.setFillColor(...grey);
+        doc.rect(wide ? 74 : 73, y - 7, wide ? 100 : 101, 9, "F");
+        drawText(doc, value, wide ? 76 : 76, y);
+      }
+
+      fieldRow(78, "Vorgang", subject);
+      drawText(doc, "Datum des Kaufs/", margin, 95);
+      drawText(doc, "Inanspruchnahme der Leistung", margin, 102);
+      doc.setFillColor(...grey);
+      doc.rect(73, 94, 101, 9, "F");
+      drawText(doc, purchaseDate, 76, 101);
+
+      drawText(doc, "Empfänger", margin, 120);
+      drawText(doc, sellerName, 53, 120);
+      doc.line(53, 122, 174, 122);
+
+      drawText(doc, "Grund", margin, 134);
+      drawText(doc, reason, 53, 134);
+      doc.line(53, 136, 174, 136);
+
+      let y = 154;
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(14);
+      drawText(doc, "Ankaufspositionen", margin, y);
+      y += 8;
+
+      doc.setFillColor(244, 247, 252);
+      doc.rect(margin, y - 6, 174, 9, "F");
+      doc.setFontSize(10);
+      drawText(doc, "Position", margin + 2, y);
+      drawText(doc, "Menge", 145, y, { align: "right" });
+      drawText(doc, "Betrag", 192, y, { align: "right" });
+      y += 8;
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(10);
+
+      const positions = getReceiptPositions(entry);
+      let shownPositionSum = 0;
+
+      positions.forEach((pos, index) => {
+        if(y > 254){
+          doc.addPage();
+          y = 24;
+        }
+
+        const titleLines = doc.splitTextToSize(sanitizePdfText(pos.title || "Position"), 112);
+        const amountValue = money(pos.amount);
+        shownPositionSum += amountValue;
+
+        drawText(doc, titleLines[0], margin + 2, y);
+        if(titleLines.length > 1){
+          for(let i = 1; i < Math.min(titleLines.length, 3); i++){
+            y += 5;
+            drawText(doc, titleLines[i], margin + 2, y);
+          }
+        }
+
+        drawText(doc, pos.qty ? String(pos.qty) : "-", 145, y, { align: "right" });
+        drawText(doc, amountValue ? moneyText(amountValue) : "-", 192, y, { align: "right" });
+        y += 7;
+        doc.setDrawColor(230);
+        doc.line(margin, y - 3, 192, y - 3);
+      });
+
+      if(Math.abs(shownPositionSum - amount) > 0.01){
+        if(y > 250){
+          doc.addPage();
+          y = 24;
+        }
+        doc.setFont("helvetica", "bold");
+        drawText(doc, "Gesamtbetrag laut Angebot", margin + 2, y + 2);
+        drawText(doc, moneyText(amount), 192, y + 2, { align: "right" });
+        y += 9;
+      }
+
+      y = Math.max(y + 10, 258);
+      if(y > 270){
+        doc.addPage();
+        y = 240;
+      }
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(13);
+      drawText(doc, purchaseDate, margin, y);
+
+      doc.setFont("times", "italic");
+      doc.setFontSize(18);
+      drawText(doc, "F. Michel", 128, y);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(10);
+      doc.line(124, y + 2, 174, y + 2);
+      drawText(doc, "Unterschrift", 124, y + 9);
+
+      doc.setFontSize(8);
+      doc.setTextColor(90);
+      drawText(doc, "Eigenbeleg fuer Ankauf von Privat. Umsatzsteuer 0 %. Erstellt mit ChiefCards Angebots-Tracker.", margin, 287);
+
+      const safeNo = String(receiptNo).replace(/[^a-z0-9_-]/gi, "_");
+      const safeName = String(sellerName).replace(/[^a-z0-9_-]/gi, "_").slice(0, 40);
+      doc.save(`Eigenbeleg_${safeNo}_${safeName}.pdf`);
+      showToast("Eigenbeleg erstellt");
+    }
 
     function buildReply(e){
       let t=`Hi${e.name ? " " + e.name : ""},\n\n`;
