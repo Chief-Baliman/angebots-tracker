@@ -2,58 +2,544 @@
 <html lang="de">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>ChiefCards Angebots-Tracker</title>
   <style>
-    :root{--cc-blue:#063692;--cc-gold:#e9a846;--cc-red:#ed0502;--cc-green:#22c55e;--cc-bg:#f4f7fc;--cc-card:#fff;--cc-text:#111827;--cc-muted:#6b7280;--cc-border:#d9e1f2;--cc-soft:#f9fbff;--cc-warning:#fff8e8;--cc-danger:#fff1f2;--cc-success:#e9fbef;--shadow:0 12px 34px rgba(17,24,39,.07)}
-    *{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(circle at 20% 0%,rgba(233,168,70,.2),transparent 28%),radial-gradient(circle at 80% 8%,rgba(6,54,146,.13),transparent 30%),var(--cc-bg);color:var(--cc-text)}button,input,select,textarea{font:inherit}.app{width:min(1380px,calc(100% - 28px));margin:0 auto;padding:22px 0 46px}.hidden{display:none!important}.login-wrap{min-height:100vh;display:grid;place-items:center;padding:20px}.login-card{width:min(440px,100%);background:#fff;border:1px solid var(--cc-border);border-radius:24px;padding:26px;box-shadow:var(--shadow)}.login-logo{width:58px;height:58px;border-radius:18px;background:linear-gradient(135deg,var(--cc-blue),#0a1d46);display:grid;place-items:center;color:#fff;font-size:24px;font-weight:950;margin-bottom:16px}.login-card h1{margin:0 0 8px;color:var(--cc-blue);line-height:1.08}.login-card p{margin:0 0 18px;color:var(--cc-muted);line-height:1.5}.hero{background:radial-gradient(circle at 15% 25%,rgba(233,168,70,.28),transparent 26%),radial-gradient(circle at 88% 70%,rgba(237,5,2,.14),transparent 24%),linear-gradient(135deg,#05245e 0%,#063692 55%,#081d46 100%);color:#fff;border-radius:28px;padding:24px;box-shadow:0 20px 60px rgba(6,54,146,.22);display:flex;align-items:flex-start;justify-content:space-between;gap:18px}.hero h1{margin:0 0 8px;font-size:clamp(30px,4vw,48px);line-height:1.04;letter-spacing:-.03em}.hero p{margin:0;color:rgba(255,255,255,.84);line-height:1.55;max-width:800px}.hero-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}.statusline{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}.badge{display:inline-flex;align-items:center;gap:7px;border-radius:999px;padding:7px 11px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.17);color:rgba(255,255,255,.88);font-size:13px;font-weight:800}.dot{width:8px;height:8px;border-radius:999px;background:var(--cc-gold)}.dashboard{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;margin-top:18px}.kpi{background:#fff;border:1px solid var(--cc-border);border-radius:18px;padding:15px;box-shadow:var(--shadow)}.kpi span{display:block;color:var(--cc-muted);font-size:12px;font-weight:850;margin-bottom:5px}.kpi strong{display:block;color:var(--cc-blue);font-size:24px;font-weight:950;line-height:1}.tabs{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}.tab{border:1px solid var(--cc-border);background:#fff;color:var(--cc-blue);border-radius:999px;padding:11px 16px;min-height:44px;font-weight:950;cursor:pointer;box-shadow:0 8px 18px rgba(17,24,39,.04)}.tab.active{background:var(--cc-blue);color:#fff;border-color:var(--cc-blue)}.layout{display:grid;grid-template-columns:430px minmax(0,1fr);gap:18px;align-items:start;margin-top:18px}.card{background:#fff;border:1px solid var(--cc-border);border-radius:22px;padding:18px;box-shadow:var(--shadow)}.card h2,.card h3{margin:0 0 12px;color:var(--cc-blue);line-height:1.18}.card h2{font-size:22px}.card h3{font-size:17px}.small{color:var(--cc-muted);font-size:13px;line-height:1.48;margin:8px 0 0}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{display:flex;flex-direction:column;gap:6px}.field.full{grid-column:1/-1}label{color:var(--cc-text);font-size:13px;font-weight:850}input,select,textarea{width:100%;border:1px solid var(--cc-border);border-radius:13px;padding:10px 11px;background:#fff;color:var(--cc-text)}textarea{min-height:92px;resize:vertical;line-height:1.45}input:focus,select:focus,textarea:focus{outline:3px solid rgba(233,168,70,.35);border-color:var(--cc-gold)}.button-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}button{border:0;border-radius:13px;padding:11px 14px;min-height:43px;cursor:pointer;font-weight:950;font-size:14px}.btn-primary{background:var(--cc-gold);color:#1f2937}.btn-secondary{background:#eef3ff;color:var(--cc-blue);border:1px solid var(--cc-border)}.btn-blue{background:var(--cc-blue);color:#fff}.btn-danger{background:#fee2e2;color:#991b1b}.filters{display:grid;grid-template-columns:minmax(0,1fr) 170px 170px 140px;gap:10px;margin-bottom:12px}.list{display:grid;gap:10px}.item{border:1px solid var(--cc-border);background:#fff;border-radius:18px;padding:14px;display:grid;gap:10px}.item-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.item-title{min-width:0}.item-title strong{display:block;color:var(--cc-blue);font-size:16px;line-height:1.2;overflow-wrap:anywhere}.item-title span{display:block;color:var(--cc-muted);font-size:13px;margin-top:3px;overflow-wrap:anywhere}.item-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}.mini-btn{min-height:34px;padding:7px 10px;border-radius:999px;font-size:12px}.meta-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}.meta{background:var(--cc-soft);border:1px solid #edf1f8;border-radius:14px;padding:9px;min-width:0}.meta span{display:block;color:var(--cc-muted);font-size:11px;font-weight:850;margin-bottom:3px}.meta strong{display:block;color:var(--cc-text);font-size:13px;overflow-wrap:anywhere}.status{display:inline-flex;align-items:center;border-radius:999px;padding:6px 10px;font-size:12px;font-weight:950;background:#eef3ff;color:var(--cc-blue);white-space:nowrap}.status.accepted,.status.done{background:var(--cc-success);color:#14532d}.status.problem,.status.declined{background:var(--cc-danger);color:#991b1b}.status.waiting{background:var(--cc-warning);color:#5f4100}.empty{padding:26px;border:1px dashed var(--cc-border);border-radius:18px;text-align:center;color:var(--cc-muted);background:rgba(255,255,255,.6);line-height:1.55}.detail-box{background:var(--cc-soft);border:1px solid #edf1f8;border-radius:14px;padding:11px;color:var(--cc-text);font-size:13px;line-height:1.45;white-space:pre-wrap}.toast{position:fixed;right:18px;bottom:18px;padding:12px 14px;background:#111827;color:#fff;border-radius:14px;box-shadow:0 12px 30px rgba(0,0,0,.22);font-size:14px;opacity:0;transform:translateY(12px);pointer-events:none;transition:opacity .2s ease,transform .2s ease;z-index:50}.toast.show{opacity:1;transform:translateY(0)}
-    
-.modal-backdrop{position:fixed;inset:0;background:rgba(2,6,23,.68);display:grid;place-items:center;padding:18px;z-index:40}.modal{width:min(760px,100%);max-height:92vh;overflow:auto;background:#fff;border:1px solid var(--cc-border);border-radius:22px;padding:18px;box-shadow:0 24px 70px rgba(0,0,0,.25)}.modal h2{margin:0 0 8px;color:var(--cc-blue)}.modal textarea{min-height:320px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px}.modal-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
-@media(max-width:1100px){.dashboard{grid-template-columns:repeat(3,1fr)}.layout{grid-template-columns:1fr}.filters{grid-template-columns:1fr 1fr}}@media(max-width:640px){.app{width:min(100% - 18px,1380px);padding-top:10px}.hero,.card,.login-card{border-radius:18px;padding:16px}.hero{flex-direction:column}.hero-actions{justify-content:flex-start;width:100%}.hero-actions button{width:100%}.dashboard,.form-grid,.filters,.meta-grid{grid-template-columns:1fr}.item-head{flex-direction:column}.item-actions{justify-content:flex-start}.button-row button{width:100%}}
+    :root{--blue:#063692;--gold:#e9a846;--red:#ed0502;--green:#22c55e;--bg:#f4f7fc;--card:#fff;--text:#111827;--muted:#6b7280;--border:#d9e1f2;--soft:#f9fbff;--warn:#fff8e8;--bad:#fff1f2;--good:#e9fbef}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(circle at 20% 0%,rgba(233,168,70,.18),transparent 28%),radial-gradient(circle at 80% 8%,rgba(6,54,146,.12),transparent 30%),var(--bg);color:var(--text)}
+    button,input,select,textarea{font:inherit}
+    .hidden{display:none!important}
+    .wrap{width:min(1380px,calc(100% - 28px));margin:0 auto;padding:22px 0 50px}
+    .login{min-height:100vh;display:grid;place-items:center;padding:18px}
+    .login-card,.card{background:#fff;border:1px solid var(--border);border-radius:22px;padding:20px;box-shadow:0 12px 34px rgba(17,24,39,.07)}
+    .login-card{width:min(430px,100%)}
+    .logo{width:58px;height:58px;border-radius:18px;background:linear-gradient(135deg,var(--blue),#081d46);display:grid;place-items:center;color:#fff;font-size:24px;font-weight:950;margin-bottom:14px}
+    h1,h2,h3{margin:0 0 10px;color:var(--blue);line-height:1.15}
+    p{line-height:1.5}
+    .small{font-size:13px;color:var(--muted);margin:8px 0 0}
+    .hero{background:linear-gradient(135deg,#05245e,var(--blue) 58%,#081d46);color:#fff;border-radius:28px;padding:24px;box-shadow:0 20px 60px rgba(6,54,146,.22);display:flex;justify-content:space-between;gap:18px;align-items:flex-start}
+    .hero h1{color:#fff;font-size:clamp(30px,4vw,48px);letter-spacing:-.03em}
+    .hero p{color:rgba(255,255,255,.84);margin:0;max-width:760px}
+    .hero-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+    .badge{display:inline-flex;align-items:center;gap:7px;border-radius:999px;padding:7px 11px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.17);color:rgba(255,255,255,.88);font-size:13px;font-weight:800;margin-top:14px}
+    .dot{width:8px;height:8px;border-radius:999px;background:var(--gold)}
+    .dash{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;margin-top:18px}
+    .kpi{background:#fff;border:1px solid var(--border);border-radius:18px;padding:15px;box-shadow:0 10px 26px rgba(17,24,39,.05)}
+    .kpi span{display:block;color:var(--muted);font-size:12px;font-weight:850;margin-bottom:5px}
+    .kpi strong{display:block;color:var(--blue);font-size:24px;font-weight:950}
+    .tabs{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+    .tab{border:1px solid var(--border);background:#fff;color:var(--blue);border-radius:999px;padding:11px 16px;font-weight:950;cursor:pointer}
+    .tab.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+    .layout{display:grid;grid-template-columns:440px minmax(0,1fr);gap:18px;align-items:start;margin-top:18px}
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .field{display:flex;flex-direction:column;gap:6px}.field.full{grid-column:1/-1}
+    label{font-weight:850;font-size:13px;color:var(--text)}
+    input,select,textarea{width:100%;border:1px solid var(--border);border-radius:13px;padding:10px 11px;background:#fff;color:var(--text)}
+    textarea{min-height:86px;resize:vertical;line-height:1.45}
+    input:focus,select:focus,textarea:focus{outline:3px solid rgba(233,168,70,.35);border-color:var(--gold)}
+    .btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+    button{border:0;border-radius:13px;padding:11px 14px;min-height:42px;cursor:pointer;font-weight:950;font-size:14px}
+    .primary{background:var(--gold);color:#1f2937}.secondary{background:#eef3ff;color:var(--blue);border:1px solid var(--border)}.blue{background:var(--blue);color:#fff}.danger{background:#fee2e2;color:#991b1b}.green{background:#dcfce7;color:#14532d}
+    .filters{display:grid;grid-template-columns:minmax(0,1fr) 170px 170px 140px;gap:10px;margin-bottom:12px}
+    .list{display:grid;gap:10px}.empty{padding:26px;border:1px dashed var(--border);border-radius:18px;text-align:center;color:var(--muted);background:rgba(255,255,255,.6)}
+    .item{border:1px solid var(--border);background:#fff;border-radius:18px;padding:14px;display:grid;gap:10px}
+    .item-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.item-title strong{display:block;color:var(--blue);font-size:16px}.item-title span{display:block;color:var(--muted);font-size:13px;margin-top:3px;overflow-wrap:anywhere}
+    .item-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}.mini{min-height:34px;padding:7px 10px;border-radius:999px;font-size:12px}
+    .meta-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}.meta{background:var(--soft);border:1px solid #edf1f8;border-radius:14px;padding:9px;min-width:0}.meta span{display:block;color:var(--muted);font-size:11px;font-weight:850;margin-bottom:3px}.meta strong{display:block;color:var(--text);font-size:13px;overflow-wrap:anywhere}
+    .status{display:inline-flex;border-radius:999px;padding:6px 10px;font-size:12px;font-weight:950;background:#eef3ff;color:var(--blue);white-space:nowrap}.status.accepted,.status.done{background:var(--good);color:#14532d}.status.problem,.status.declined{background:var(--bad);color:#991b1b}.status.waiting{background:var(--warn);color:#5f4100}
+    .detail{background:var(--soft);border:1px solid #edf1f8;border-radius:14px;padding:11px;color:var(--text);font-size:13px;line-height:1.45;white-space:pre-wrap}
+    .split-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:4px}.split-table th,.split-table td{padding:9px 8px;border-bottom:1px solid #edf1f8;text-align:left}.split-table th{color:var(--blue);font-size:11px;text-transform:uppercase;background:#f4f7fc}.right{text-align:right!important;white-space:nowrap}
+    .modal-backdrop{position:fixed;inset:0;background:rgba(2,6,23,.55);display:grid;place-items:center;padding:16px;z-index:20}.modal{width:min(760px,100%);background:#fff;border-radius:22px;border:1px solid var(--border);box-shadow:0 24px 80px rgba(0,0,0,.3);padding:18px}.modal textarea{min-height:300px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px}
+    .toast{position:fixed;right:18px;bottom:18px;padding:12px 14px;background:#111827;color:#fff;border-radius:14px;box-shadow:0 12px 30px rgba(0,0,0,.22);font-size:14px;opacity:0;transform:translateY(12px);pointer-events:none;transition:opacity .2s ease,transform .2s ease;z-index:50}.toast.show{opacity:1;transform:translateY(0)}
+    @media(max-width:1100px){.dash{grid-template-columns:repeat(3,1fr)}.layout{grid-template-columns:1fr}.filters{grid-template-columns:1fr 1fr}}
+    @media(max-width:640px){.wrap{width:min(100% - 18px,1380px);padding-top:10px}.hero,.card,.login-card,.modal{border-radius:18px;padding:16px}.hero{flex-direction:column}.hero-actions,.hero-actions button{width:100%}.dash,.form-grid,.filters,.meta-grid{grid-template-columns:1fr}.item-head{flex-direction:column}.item-actions{justify-content:flex-start}.btn-row button{width:100%}}
   </style>
 </head>
 <body>
-  <div class="login-wrap" id="loginScreen"><section class="login-card"><div class="login-logo">CC</div><h1>ChiefCards Angebots-Tracker</h1><p>Interner Zugriff für Bulk-Anfragen und Sammlungsangebote.</p><div class="field"><label for="pinInput">PIN</label><input id="pinInput" type="password" inputmode="numeric" placeholder="PIN eingeben"></div><div class="button-row"><button class="btn-primary" id="loginBtn" type="button">Entsperren</button></div><p class="small">Hinweis: Dieser PIN schützt vor einfachem Zugriff. Bei einer statischen GitHub-Pages-Datei ist das kein echter Login für sensible Daten.</p></section></div>
-  <main class="app hidden" id="app"><section class="hero"><div><h1>Angebots-Tracker</h1><p>Verwalte Bulk-Anfragen und Sammlungsangebote getrennt, mit Status, Details, Angebotshöhe, nächsten Schritten und CSV-Export. Gespeichert wird getrennt vom Queue Tracker in Firebase.</p><div class="statusline"><span class="badge"><span class="dot"></span><span id="syncStatus">Firebase wird verbunden...</span></span><span class="badge"><span class="dot"></span><span>Datenpfad: offerTracker</span></span></div></div><div class="hero-actions"><button class="btn-primary" id="importBtn" type="button">Mail importieren</button><button class="btn-secondary" id="exportBtn" type="button">CSV exportieren</button><button class="btn-secondary" id="lockBtn" type="button">Sperren</button></div></section>
-    <section class="dashboard"><div class="kpi"><span>Offen</span><strong id="kpiOpen">0</strong></div><div class="kpi"><span>Angebote gesendet</span><strong id="kpiSent">0</strong></div><div class="kpi"><span>Angenommen</span><strong id="kpiAccepted">0</strong></div><div class="kpi"><span>Paket unterwegs</span><strong id="kpiTransit">0</strong></div><div class="kpi"><span>Auszahlung offen</span><strong id="kpiPayout">0</strong></div><div class="kpi"><span>Wert deiner Angebote</span><strong id="kpiOfferValue">0 €</strong></div></section>
-    <section class="tabs"><button class="tab active" type="button" data-tab="bulk">Bulk-Anfragen</button><button class="tab" type="button" data-tab="collections">Sammlungen / Einzelankauf</button></section>
-    <section class="layout"><aside class="card"><h2 id="formTitle">Bulk-Anfrage erfassen</h2><form id="entryForm"><input type="hidden" id="entryId"><div class="form-grid" id="bulkForm">
-      <div class="field"><label>Name</label><input data-field="name" required></div><div class="field"><label>E-Mail</label><input data-field="email" type="email"></div><div class="field"><label>Datum</label><input data-field="date" type="date"></div><div class="field"><label>Status</label><select data-field="status"></select></div><div class="field"><label>Kartenmenge</label><input data-field="cardCount" type="number" min="0" step="1"></div><div class="field"><label>Rechnerwert</label><input data-field="calcValue" type="number" min="0" step="0.01"></div><div class="field"><label>Bulk-Score</label><select data-field="score"><option value="">Nicht bewertet</option><option>A</option><option>B</option><option>C</option><option>D</option></select></div><div class="field"><label>Empfohlenes Angebot</label><input data-field="recommendedOffer" type="number" min="0" step="0.01"></div><div class="field"><label>Dein Angebot</label><input data-field="ownOffer" type="number" min="0" step="0.01"></div><div class="field"><label>Auszahlung</label><select data-field="payoutMethod"><option value="">Offen</option><option>PayPal</option><option>IBAN</option></select></div><div class="field full"><label>Versandstatus</label><input data-field="shippingStatus" placeholder="z. B. Versandübernahme erreicht"></div><div class="field full"><label>Genauer Karten-Split</label><textarea data-field="splitDetails" placeholder="z. B. DE Non-Holo 2100, Holo/Reverse 300, Trainer 260, Energien 380..."></textarea></div><div class="field full"><label>Auffälligkeiten</label><textarea data-field="issues"></textarea></div><div class="field full"><label>Mailtext / Link / Rohdaten</label><textarea data-field="sourceText"></textarea></div><div class="field full"><label>Nächster Schritt</label><input data-field="nextStep"></div><div class="field full"><label>Notiz</label><textarea data-field="note"></textarea></div></div>
-      <div class="form-grid hidden" id="collectionsForm"><div class="field"><label>Name</label><input data-field="name" required></div><div class="field"><label>E-Mail</label><input data-field="email" type="email"></div><div class="field"><label>Datum</label><input data-field="date" type="date"></div><div class="field"><label>Status</label><select data-field="status"></select></div><div class="field"><label>Anfragetyp</label><select data-field="requestType"><option>Gemischt</option><option>Einzelkarte</option><option>Slab</option><option>Sealed</option><option>Sammlung</option></select></div><div class="field"><label>Artikelanzahl</label><input data-field="itemCount" type="number" min="0" step="1"></div><div class="field"><label>Wunschpreis gesamt</label><input data-field="wantedPrice" type="number" min="0" step="0.01"></div><div class="field"><label>Bester Gesamtpreis</label><input data-field="bestTotalPrice" type="number" min="0" step="0.01"></div><div class="field"><label>Dein Angebot</label><input data-field="ownOffer" type="number" min="0" step="0.01"></div><div class="field"><label>Auszahlung</label><select data-field="payoutMethod"><option value="">Offen</option><option>PayPal</option><option>IBAN</option><option>Anrechnung gegen sealed Produkte</option></select></div><div class="field full"><label>Bilderlink / Liste</label><input data-field="imageLink"></div><div class="field full"><label>Kurzbeschreibung</label><textarea data-field="description"></textarea></div><div class="field full"><label>Produktdetails</label><textarea data-field="productDetails" placeholder="Kartenname, Set, Nummer, Sprache, Zustand, Grade, sealed Zustand, Menge..."></textarea></div><div class="field full"><label>Fehlende Infos</label><textarea data-field="missingInfo"></textarea></div><div class="field full"><label>Nächster Schritt</label><input data-field="nextStep"></div><div class="field full"><label>Notiz</label><textarea data-field="note"></textarea></div></div>
-      <div class="button-row"><button class="btn-primary" type="submit" id="saveBtn">Speichern</button><button class="btn-secondary" type="button" id="resetBtn">Neu</button><button class="btn-danger hidden" type="button" id="deleteCurrentBtn">Löschen</button></div></form></aside>
-      <section class="card"><h2 id="listTitle">Bulk-Anfragen</h2><div class="filters"><input id="searchInput" placeholder="Suche nach Name, Mail, Notiz..."><select id="statusFilter"><option value="">Alle Status</option></select><select id="sortSelect"><option value="dateDesc">Neueste zuerst</option><option value="dateAsc">Älteste zuerst</option><option value="offerDesc">Höchstes Angebot</option><option value="nameAsc">Name A-Z</option></select><button class="btn-secondary" type="button" id="clearFiltersBtn">Filter leeren</button></div><div id="list" class="list"></div><div id="emptyList" class="empty hidden">Keine Einträge gefunden.</div></section></section></main><div id="importModal" class="hidden" style="position:fixed;inset:0;z-index:40;background:rgba(15,23,42,.62);padding:18px;display:grid;place-items:center;"><div style="width:min(760px,100%);background:#fff;border-radius:22px;border:1px solid #d9e1f2;box-shadow:0 24px 70px rgba(0,0,0,.28);padding:18px;"><h2 style="margin:0 0 8px;color:#063692;">Mail importieren</h2><p style="margin:0 0 12px;color:#6b7280;line-height:1.45;">Füge hier die komplette Shopify-Mail ein. Der Import füllt nur das Formular, danach kannst du prüfen und speichern.</p><textarea id="importText" style="width:100%;min-height:320px;border:1px solid #d9e1f2;border-radius:14px;padding:12px;font:13px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;line-height:1.45;resize:vertical;" placeholder="Mailtext hier einfügen..."></textarea><div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;"><button class="btn-primary" id="applyImportBtn" type="button">In Formular übernehmen</button><button class="btn-secondary" id="closeImportBtn" type="button">Schließen</button></div></div></div><div class="toast" id="toast">Gespeichert</div>
-  <script type="module">
-    import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";import{getDatabase,ref,onValue,set,update,remove,push}from"https://www.gstatic.com/firebasejs/10.12.4/firebase-database.js";
-    const PIN="2212";const firebaseConfig={apiKey:"AIzaSyA5kq-HiCkVroQLCwwVc24C8XYPJTZvegM",authDomain:"queue-tracker-3fa3c.firebaseapp.com",databaseURL:"https://queue-tracker-3fa3c-default-rtdb.europe-west1.firebasedatabase.app",projectId:"queue-tracker-3fa3c",storageBucket:"queue-tracker-3fa3c.firebasestorage.app",messagingSenderId:"132132188124",appId:"1:132132188124:web:ecc130f7ee7ac9d61be919",measurementId:"G-3QBWJHGDXG"};
-    const STATUSES=["Neu","In Prüfung","Rückfrage nötig","Angebot gesendet","Wartet auf Kunde","Angenommen","Abgelehnt","Paket unterwegs","Paket angekommen","Auszahlung offen","Abgeschlossen","Problemfall"];const PATHS={bulk:"offerTracker/bulk",collections:"offerTracker/collections"};const euro=new Intl.NumberFormat("de-DE",{style:"currency",currency:"EUR"});const number=new Intl.NumberFormat("de-DE");
-    const els={loginScreen:document.getElementById("loginScreen"),pinInput:document.getElementById("pinInput"),loginBtn:document.getElementById("loginBtn"),app:document.getElementById("app"),syncStatus:document.getElementById("syncStatus"),lockBtn:document.getElementById("lockBtn"),exportBtn:document.getElementById("exportBtn"),importBtn:document.getElementById("importBtn"),importModal:document.getElementById("importModal"),importText:document.getElementById("importText"),applyImportBtn:document.getElementById("applyImportBtn"),closeImportBtn:document.getElementById("closeImportBtn"),tabs:[...document.querySelectorAll(".tab")],formTitle:document.getElementById("formTitle"),listTitle:document.getElementById("listTitle"),entryForm:document.getElementById("entryForm"),entryId:document.getElementById("entryId"),bulkForm:document.getElementById("bulkForm"),collectionsForm:document.getElementById("collectionsForm"),saveBtn:document.getElementById("saveBtn"),resetBtn:document.getElementById("resetBtn"),deleteCurrentBtn:document.getElementById("deleteCurrentBtn"),searchInput:document.getElementById("searchInput"),statusFilter:document.getElementById("statusFilter"),sortSelect:document.getElementById("sortSelect"),clearFiltersBtn:document.getElementById("clearFiltersBtn"),list:document.getElementById("list"),emptyList:document.getElementById("emptyList"),toast:document.getElementById("toast"),kpiOpen:document.getElementById("kpiOpen"),kpiSent:document.getElementById("kpiSent"),kpiAccepted:document.getElementById("kpiAccepted"),kpiTransit:document.getElementById("kpiTransit"),kpiPayout:document.getElementById("kpiPayout"),kpiOfferValue:document.getElementById("kpiOfferValue")};
-    let db,activeTab="bulk",data={bulk:{},collections:{}};function init(){fillStatusSelects();if(localStorage.getItem("ccOfferTrackerUnlocked")==="yes")unlock();els.loginBtn.addEventListener("click",checkPin);els.pinInput.addEventListener("keydown",e=>{if(e.key==="Enter")checkPin()});els.lockBtn.addEventListener("click",lock);els.tabs.forEach(t=>t.addEventListener("click",()=>switchTab(t.dataset.tab)));els.entryForm.addEventListener("submit",saveEntry);els.resetBtn.addEventListener("click",resetForm);els.deleteCurrentBtn.addEventListener("click",deleteCurrent);els.searchInput.addEventListener("input",render);els.statusFilter.addEventListener("change",render);els.sortSelect.addEventListener("change",render);els.clearFiltersBtn.addEventListener("click",clearFilters);els.exportBtn.addEventListener("click",exportCsv);els.importBtn.addEventListener("click",openImport);els.closeImportBtn.addEventListener("click",closeImport);els.applyImportBtn.addEventListener("click",applyImport)}
-    
-    function openImport(){els.importText.value="";els.importModal.classList.remove("hidden");setTimeout(()=>els.importText.focus(),50)}
-    function closeImport(){els.importModal.classList.add("hidden")}
-    function applyImport(){const raw=els.importText.value||"";if(!raw.trim()){showToast("Kein Mailtext eingefügt");return}resetForm();const parsed=activeTab==="bulk"?parseBulkMail(raw):parseCollectionMail(raw);Object.entries(parsed).forEach(([k,v])=>setActiveField(k,v));closeImport();showToast("Mail übernommen. Bitte prüfen und speichern.")}
-    function setActiveField(key,value){const field=getActiveForm().querySelector(`[data-field="${key}"]`);if(field&&value!==undefined&&value!==null&&String(value)!=="")field.value=value}
-    function compactText(text){return String(text||"").replace(/\u00a0/g," ").replace(/[–—]/g,"-").replace(/\s+/g," ").trim()}
-    function firstEmail(text){const m=String(text||"").match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i);return m?m[0]:""}
-    function valueAfter(text,label,nextLabels){const n=nextLabels&&nextLabels.length?`(?=\\s+(?:${nextLabels.join("|")})\\s*:|$)`:"(?=$)";const r=new RegExp(label+"\\s*:\\s*(.*?)"+n,"i");const m=text.match(r);return m?m[1].trim():""}
-    function parseMoneyText(v){if(!v)return"";let c=String(v).replace(/€/g,"").replace(/[^\d,.-]/g,"").trim();if(!c)return"";if(c.includes(",")&&c.includes("."))c=c.replace(/\./g,"").replace(",",".");else if(c.includes(","))c=c.replace(",",".");const n=parseFloat(c);return Number.isFinite(n)?String(Math.round(n*100)/100):""}
-    function parseIntText(v){if(!v)return"";const n=parseInt(String(v).replace(/[^\d]/g,""),10);return Number.isFinite(n)?String(n):""}
-    function parseBulkMail(raw){const text=compactText(raw);const out={status:"Neu",date:new Date().toISOString().slice(0,10),email:firstEmail(raw),sourceText:raw,nextStep:"Angebot prüfen / senden"};out.calcValue=parseMoneyText(valueAfter(text,"Voraussichtliche Auszahlung",["Kartenmenge","Versandstatus","Positionen","Kundennachricht"]));out.cardCount=parseIntText(valueAfter(text,"Kartenmenge",["Versandstatus","Positionen","Kundennachricht"]));out.shippingStatus=valueAfter(text,"Versandstatus",["Positionen","Kundennachricht","Bestätigung des Kunden","Bestaetigung des Kunden"]);const pos=[];const re=/((?:pokémon|pokemon)\s+(?:deutsch|englisch|japanisch)|sonstiges\s*&\s*zubehör|sonstiges\s*&\s*zubehoer)\s*:\s*(.*?)\s*:\s*([\d.]+)\s*x\s*([\d.,]+)\s*€\s*=\s*([\d.,]+)\s*€/gi;let m;while((m=re.exec(text))!==null){pos.push(`${m[1].replace(/^pokemon/i,"Pokémon")}: ${m[2]}: ${m[3]} x ${m[4]} € = ${m[5]} €`)}out.splitDetails=pos.join("\n");out.issues="Aus Bulk-Mail importiert. Bitte ggf. mit Bulk-Analyse-Tool bewerten und Score/Angebot ergänzen.";return out}
-    function parseCollectionMail(raw){const text=compactText(raw);const out={status:"Neu",date:new Date().toISOString().slice(0,10),email:firstEmail(raw),nextStep:"Details prüfen / Angebot vorbereiten"};out.wantedPrice=parseMoneyText(valueAfter(text,"Wunschpreis gesamt",["Bester Gesamtpreis","Gewünschte Auszahlung","Gewuenschte Auszahlung","Bilder-Link","Bilderlink","Zusätzliche Nachricht","Zusaetzliche Nachricht","Angebotene Artikel"]));out.bestTotalPrice=parseMoneyText(valueAfter(text,"Bester Gesamtpreis bei Komplettabnahme",["Angebotene Artikel","Bilder-Link","Bilderlink","Zusätzliche Nachricht","Zusaetzliche Nachricht"]));let payout=valueAfter(text,"Gewünschte Auszahlung",["Bester Gesamtpreis","Bilder-Link","Bilderlink","Zusätzliche Nachricht","Zusaetzliche Nachricht","Angebotene Artikel"]);if(!payout)payout=valueAfter(text,"Gewuenschte Auszahlung",["Bester Gesamtpreis","Bilder-Link","Bilderlink","Zusätzliche Nachricht","Zusaetzliche Nachricht","Angebotene Artikel"]);out.payoutMethod=payout;out.imageLink=valueAfter(text,"Bilder-Link",["Zusätzliche Nachricht","Zusaetzliche Nachricht","Angebotene Artikel"])||valueAfter(text,"Bilderlink",["Zusätzliche Nachricht","Zusaetzliche Nachricht","Angebotene Artikel"]);const articles=(text.match(/Artikel\s+\d+\s*:/gi)||[]).length;out.itemCount=articles?String(articles):"";const detailsStart=text.search(/Angebotene Artikel\s*:/i);out.productDetails=detailsStart>=0?text.slice(detailsStart).trim():raw;out.description=articles?`${articles} Artikel aus Mail importiert`:"Sammlungsanfrage aus Mail importiert";out.missingInfo=/Nicht angegeben/i.test(raw)?"In der Anfrage kommen Felder mit 'Nicht angegeben' vor. Bitte prüfen.":"";return out}
+  <div class="login" id="loginScreen">
+    <section class="login-card">
+      <div class="logo">CC</div>
+      <h1>ChiefCards Angebots-Tracker</h1>
+      <p class="small">Interner Zugriff für Bulk-Anfragen und Sammlungsangebote.</p>
+      <div class="field" style="margin-top:16px"><label for="pinInput">PIN</label><input id="pinInput" type="password" inputmode="numeric" placeholder="PIN eingeben"></div>
+      <div class="btn-row"><button class="primary" id="loginBtn" type="button">Entsperren</button></div>
+      <p class="small">Der PIN ist ein einfacher Schutz für die Oberfläche. Firebase-Regeln bleiben separat relevant.</p>
+    </section>
+  </div>
 
-function fillStatusSelects(){document.querySelectorAll("select[data-field='status']").forEach(s=>{s.innerHTML=STATUSES.map(x=>`<option>${escapeHtml(x)}</option>`).join("")});els.statusFilter.innerHTML='<option value="">Alle Status</option>'+STATUSES.map(x=>`<option>${escapeHtml(x)}</option>`).join("")}
-    function checkPin(){if(els.pinInput.value===PIN){localStorage.setItem("ccOfferTrackerUnlocked","yes");unlock()}else{showToast("Falsche PIN");els.pinInput.value="";els.pinInput.focus()}}function unlock(){els.loginScreen.classList.add("hidden");els.app.classList.remove("hidden");setupFirebase()}function lock(){localStorage.removeItem("ccOfferTrackerUnlocked");location.reload()}
-    function setupFirebase(){try{const app=initializeApp(firebaseConfig);db=getDatabase(app);onValue(ref(db,PATHS.bulk),s=>{data.bulk=s.val()||{};els.syncStatus.textContent="Verbunden";render()});onValue(ref(db,PATHS.collections),s=>{data.collections=s.val()||{};els.syncStatus.textContent="Verbunden";render()})}catch(e){console.error(e);els.syncStatus.textContent="Firebase-Fehler";showToast("Firebase konnte nicht verbunden werden")}}
-    function switchTab(tab){activeTab=tab;els.tabs.forEach(t=>t.classList.toggle("active",t.dataset.tab===tab));const isBulk=tab==="bulk";els.bulkForm.classList.toggle("hidden",!isBulk);els.collectionsForm.classList.toggle("hidden",isBulk);els.formTitle.textContent=isBulk?"Bulk-Anfrage erfassen":"Sammlungsangebot erfassen";els.listTitle.textContent=isBulk?"Bulk-Anfragen":"Sammlungen / Einzelankauf";resetForm();render()}function getActiveForm(){return activeTab==="bulk"?els.bulkForm:els.collectionsForm}function getEntriesArray(tab=activeTab){return Object.entries(data[tab]||{}).map(([id,entry])=>({id,...entry}))}
-    function readForm(){const form=getActiveForm(),values={};form.querySelectorAll("[data-field]").forEach(f=>values[f.dataset.field]=f.value||"");return{...values,type:activeTab,updatedAt:new Date().toISOString(),createdAt:values.createdAt||new Date().toISOString()}}function fillForm(entry){const form=getActiveForm();form.querySelectorAll("[data-field]").forEach(f=>f.value=entry[f.dataset.field]??"");els.entryId.value=entry.id;els.deleteCurrentBtn.classList.remove("hidden");els.saveBtn.textContent="Änderungen speichern";window.scrollTo({top:document.querySelector(".layout").offsetTop-10,behavior:"smooth"})}
-    async function saveEntry(e){e.preventDefault();const values=readForm();values.name=values.name||"Unbenannt";values.status=values.status||"Neu";const id=els.entryId.value;try{if(id){await update(ref(db,`${PATHS[activeTab]}/${id}`),values);showToast("Aktualisiert")}else{const newRef=push(ref(db,PATHS[activeTab]));values.createdAt=new Date().toISOString();await set(newRef,values);showToast("Gespeichert")}resetForm()}catch(error){console.error(error);showToast("Speichern fehlgeschlagen")}}
-    function resetForm(){els.entryForm.reset();els.entryId.value="";els.deleteCurrentBtn.classList.add("hidden");els.saveBtn.textContent="Speichern";const today=new Date().toISOString().slice(0,10);getActiveForm().querySelectorAll("[data-field='date']").forEach(i=>i.value=today);getActiveForm().querySelectorAll("[data-field='status']").forEach(s=>s.value="Neu")}async function deleteCurrent(){const id=els.entryId.value;if(!id)return;if(!confirm("Diesen Eintrag wirklich löschen?"))return;try{await remove(ref(db,`${PATHS[activeTab]}/${id}`));resetForm();showToast("Gelöscht")}catch(e){console.error(e);showToast("Löschen fehlgeschlagen")}}
-    function clearFilters(){els.searchInput.value="";els.statusFilter.value="";els.sortSelect.value="dateDesc";render()}function render(){renderDashboard();let entries=getEntriesArray();const search=normalize(els.searchInput.value),status=els.statusFilter.value,sort=els.sortSelect.value;if(search)entries=entries.filter(e=>normalize(Object.values(e).join(" ")).includes(search));if(status)entries=entries.filter(e=>e.status===status);entries.sort((a,b)=>{if(sort==="dateAsc")return String(a.date||"").localeCompare(String(b.date||""));if(sort==="offerDesc")return getMoney(b.ownOffer)-getMoney(a.ownOffer);if(sort==="nameAsc")return String(a.name||"").localeCompare(String(b.name||""));return String(b.date||"").localeCompare(String(a.date||""))});els.list.innerHTML="";if(!entries.length){els.emptyList.classList.remove("hidden");return}els.emptyList.classList.add("hidden");entries.forEach(e=>els.list.appendChild(createEntryCard(e)))}
-    function renderDashboard(){const all=[...getEntriesArray("bulk"),...getEntriesArray("collections")],openStatuses=["Neu","In Prüfung","Rückfrage nötig","Wartet auf Kunde"];els.kpiOpen.textContent=number.format(all.filter(e=>openStatuses.includes(e.status)).length);els.kpiSent.textContent=number.format(all.filter(e=>e.status==="Angebot gesendet").length);els.kpiAccepted.textContent=number.format(all.filter(e=>e.status==="Angenommen").length);els.kpiTransit.textContent=number.format(all.filter(e=>e.status==="Paket unterwegs").length);els.kpiPayout.textContent=number.format(all.filter(e=>e.status==="Auszahlung offen").length);els.kpiOfferValue.textContent=euro.format(all.filter(e=>!["Abgelehnt","Abgeschlossen"].includes(e.status)).reduce((s,e)=>s+getMoney(e.ownOffer),0))}
-    function createEntryCard(entry){const div=document.createElement("article");div.className="item";const statusClass=statusToClass(entry.status);if(activeTab==="bulk"){div.innerHTML=`<div class="item-head"><div class="item-title"><strong>${escapeHtml(entry.name||"Unbenannt")}</strong><span>${escapeHtml(entry.email||"Keine E-Mail")} · ${formatDate(entry.date)} · Bulk</span></div><div class="item-actions"><span class="status ${statusClass}">${escapeHtml(entry.status||"Neu")}</span><button class="mini-btn btn-secondary" data-action="copy">Antwort</button><button class="mini-btn btn-blue" data-action="edit">Bearbeiten</button></div></div><div class="meta-grid"><div class="meta"><span>Karten</span><strong>${number.format(getInt(entry.cardCount))}</strong></div><div class="meta"><span>Rechnerwert</span><strong>${euro.format(getMoney(entry.calcValue))}</strong></div><div class="meta"><span>Score</span><strong>${escapeHtml(entry.score||"–")}</strong></div><div class="meta"><span>Empfohlen</span><strong>${euro.format(getMoney(entry.recommendedOffer))}</strong></div><div class="meta"><span>Dein Angebot</span><strong>${euro.format(getMoney(entry.ownOffer))}</strong></div></div>${entry.splitDetails?`<div class="detail-box"><strong>Split:</strong>\n${escapeHtml(entry.splitDetails)}</div>`:""}${entry.issues?`<div class="detail-box"><strong>Auffälligkeiten:</strong>\n${escapeHtml(entry.issues)}</div>`:""}${entry.nextStep?`<div class="detail-box"><strong>Nächster Schritt:</strong> ${escapeHtml(entry.nextStep)}</div>`:""}`}else{div.innerHTML=`<div class="item-head"><div class="item-title"><strong>${escapeHtml(entry.name||"Unbenannt")}</strong><span>${escapeHtml(entry.email||"Keine E-Mail")} · ${formatDate(entry.date)} · ${escapeHtml(entry.requestType||"Gemischt")}</span></div><div class="item-actions"><span class="status ${statusClass}">${escapeHtml(entry.status||"Neu")}</span><button class="mini-btn btn-secondary" data-action="copy">Antwort</button><button class="mini-btn btn-blue" data-action="edit">Bearbeiten</button></div></div><div class="meta-grid"><div class="meta"><span>Artikel</span><strong>${number.format(getInt(entry.itemCount))}</strong></div><div class="meta"><span>Wunschpreis</span><strong>${euro.format(getMoney(entry.wantedPrice))}</strong></div><div class="meta"><span>Bester Gesamtpreis</span><strong>${euro.format(getMoney(entry.bestTotalPrice))}</strong></div><div class="meta"><span>Dein Angebot</span><strong>${euro.format(getMoney(entry.ownOffer))}</strong></div><div class="meta"><span>Auszahlung</span><strong>${escapeHtml(entry.payoutMethod||"Offen")}</strong></div></div>${entry.description?`<div class="detail-box"><strong>Beschreibung:</strong>\n${escapeHtml(entry.description)}</div>`:""}${entry.productDetails?`<div class="detail-box"><strong>Produktdetails:</strong>\n${escapeHtml(entry.productDetails)}</div>`:""}${entry.missingInfo?`<div class="detail-box"><strong>Fehlende Infos:</strong>\n${escapeHtml(entry.missingInfo)}</div>`:""}${entry.imageLink?`<div class="detail-box"><strong>Bilderlink:</strong> ${escapeHtml(entry.imageLink)}</div>`:""}${entry.nextStep?`<div class="detail-box"><strong>Nächster Schritt:</strong> ${escapeHtml(entry.nextStep)}</div>`:""}`}
-      div.querySelector("[data-action='edit']").addEventListener("click",()=>fillForm(entry));div.querySelector("[data-action='copy']").addEventListener("click",()=>copyText(buildReply(entry)));return div}
-    function buildReply(entry){const offer=getMoney(entry.ownOffer);let text="Hi"+(entry.name?" "+entry.name:"")+',\n\n';if(offer>0)text+="vielen Dank für deine Anfrage. Auf Basis deiner Angaben können wir dir vorbehaltlich finaler Prüfung aktuell "+euro.format(offer)+" anbieten.\n\n";else text+="vielen Dank für deine Anfrage. Wir haben deine Angaben erhalten und prüfen sie als Nächstes.\n\n";if(activeTab==="bulk"){text+="Wichtig ist, dass die Karten echt, korrekt sortiert und im Zustand Near Mint sind. Die finale Bestätigung erfolgt nach Eingang und Prüfung der Karten.\n\n";if(getInt(entry.cardCount)>=3000)text+="Da deine Anfrage mindestens 3.000 Karten umfasst, können wir den Versand nach vorheriger Abstimmung übernehmen. Bitte sende noch nichts los, bis du die Versanddetails von uns erhalten hast.\n\n";else text+="Da die Anfrage unter 3.000 Karten liegt, würdest du den Versand selbst organisieren. Bitte sende trotzdem noch nichts los, bis du die Einsendeadresse und die nächsten Schritte von uns erhalten hast.\n\n"}else{text+="Das Angebot gilt vorbehaltlich Prüfung von Zustand, Echtheit, Vollständigkeit und Übereinstimmung mit deinen Angaben. Bitte sende noch nichts los, bis du die Einsendeadresse und die nächsten Schritte von uns erhalten hast.\n\n"}if(entry.nextStep)text+="Nächster Schritt: "+entry.nextStep+"\n\n";return text+="Liebe Grüße\nFabian von ChiefCards"}
-    async function copyText(text){try{await navigator.clipboard.writeText(text);showToast("Antwort kopiert")}catch(e){showToast("Kopieren nicht möglich")}}function exportCsv(){const entries=getEntriesArray(activeTab),cols=activeTab==="bulk"?["name","email","date","status","cardCount","calcValue","score","recommendedOffer","ownOffer","shippingStatus","payoutMethod","splitDetails","issues","nextStep","note","sourceText"]:["name","email","date","status","requestType","itemCount","wantedPrice","bestTotalPrice","ownOffer","payoutMethod","imageLink","description","productDetails","missingInfo","nextStep","note"],rows=[cols.join(";")];entries.forEach(e=>rows.push(cols.map(c=>csvCell(e[c]||"")).join(";")));const blob=new Blob([rows.join("\n")],{type:"text/csv;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download=activeTab==="bulk"?"bulk-angebote.csv":"sammlungs-angebote.csv";a.click();URL.revokeObjectURL(url)}function csvCell(v){return '"'+String(v).replace(/"/g,'""')+'"'}function formatDate(v){if(!v)return"Kein Datum";const p=String(v).split("-");return p.length===3?`${p[2]}.${p[1]}.${p[0]}`:v}function statusToClass(status){const s=normalize(status);if(s.includes("angenommen"))return"accepted";if(s.includes("abgeschlossen"))return"done";if(s.includes("abgelehnt"))return"declined";if(s.includes("problem"))return"problem";if(s.includes("wartet")||s.includes("rueckfrage")||s.includes("rückfrage"))return"waiting";return""}function normalize(v){return String(v||"").toLowerCase().replace(/ä/g,"ae").replace(/ö/g,"oe").replace(/ü/g,"ue").replace(/ß/g,"ss")}function getMoney(v){const n=parseFloat(String(v||"0").replace(",","."));return Number.isFinite(n)?n:0}function getInt(v){const n=parseInt(v||"0",10);return Number.isFinite(n)?n:0}function escapeHtml(v){return String(v||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}function showToast(text){els.toast.textContent=text;els.toast.classList.add("show");setTimeout(()=>els.toast.classList.remove("show"),1800)}init();resetForm();
+  <main class="wrap hidden" id="app">
+    <section class="hero">
+      <div>
+        <h1>Angebots-Tracker</h1>
+        <p>Bulk und Sammlungen getrennt verwalten, Mails oder JSON-Exporte importieren, Status setzen, Angebote verfolgen und Details sauber dokumentieren.</p>
+        <span class="badge"><span class="dot"></span><span id="syncStatus">Firebase wird verbunden...</span></span>
+      </div>
+      <div class="hero-actions">
+        <button class="secondary" id="importBtn" type="button">Mail / Export importieren</button>
+        <button class="secondary" id="exportBtn" type="button">CSV exportieren</button>
+        <button class="secondary" id="lockBtn" type="button">Sperren</button>
+      </div>
+    </section>
+
+    <section class="dash">
+      <div class="kpi"><span>Offen</span><strong id="kpiOpen">0</strong></div>
+      <div class="kpi"><span>Angebote gesendet</span><strong id="kpiSent">0</strong></div>
+      <div class="kpi"><span>Angenommen</span><strong id="kpiAccepted">0</strong></div>
+      <div class="kpi"><span>Paket unterwegs</span><strong id="kpiTransit">0</strong></div>
+      <div class="kpi"><span>Auszahlung offen</span><strong id="kpiPayout">0</strong></div>
+      <div class="kpi"><span>Wert deiner Angebote</span><strong id="kpiOfferValue">0 €</strong></div>
+    </section>
+
+    <section class="tabs">
+      <button class="tab active" type="button" data-tab="bulk">Bulk-Anfragen</button>
+      <button class="tab" type="button" data-tab="collections">Sammlungen / Einzelankauf</button>
+    </section>
+
+    <section class="layout">
+      <aside class="card">
+        <h2 id="formTitle">Bulk-Anfrage erfassen</h2>
+        <form id="entryForm">
+          <input type="hidden" id="entryId">
+          <div class="form-grid" id="bulkForm">
+            <div class="field"><label>Name</label><input data-field="name" required></div>
+            <div class="field"><label>E-Mail</label><input data-field="email" type="email"></div>
+            <div class="field"><label>Datum</label><input data-field="date" type="date"></div>
+            <div class="field"><label>Status</label><select data-field="status"></select></div>
+            <div class="field"><label>Kartenmenge</label><input data-field="cardCount" type="number" min="0" step="1"></div>
+            <div class="field"><label>Rechnerwert</label><input data-field="calcValue" type="number" min="0" step="0.01"></div>
+            <div class="field"><label>Bulk-Score</label><select data-field="score"><option value="">Nicht bewertet</option><option>A</option><option>B</option><option>C</option><option>D</option></select></div>
+            <div class="field"><label>Empfohlenes Angebot</label><input data-field="recommendedOffer" type="number" min="0" step="0.01"></div>
+            <div class="field"><label>Dein Angebot</label><input data-field="ownOffer" type="number" min="0" step="0.01"></div>
+            <div class="field"><label>Auszahlung</label><select data-field="payoutMethod"><option value="">Offen</option><option>PayPal</option><option>IBAN</option></select></div>
+            <div class="field full"><label>Versandstatus</label><input data-field="shippingStatus"></div>
+            <div class="field full"><label>Genauer Karten-Split</label><textarea data-field="splitDetails" placeholder="DE Non-Holo: 500 | 12,50 €&#10;DE Trainer: 100 | 1,50 €"></textarea></div>
+            <div class="field full"><label>Auffälligkeiten</label><textarea data-field="issues"></textarea></div>
+            <div class="field full"><label>Mailtext / Rohdaten</label><textarea data-field="sourceText"></textarea></div>
+            <div class="field full"><label>Nächster Schritt</label><input data-field="nextStep"></div>
+            <div class="field full"><label>Notiz</label><textarea data-field="note"></textarea></div>
+          </div>
+
+          <div class="form-grid hidden" id="collectionsForm">
+            <div class="field"><label>Name</label><input data-field="name" required></div>
+            <div class="field"><label>E-Mail</label><input data-field="email" type="email"></div>
+            <div class="field"><label>Datum</label><input data-field="date" type="date"></div>
+            <div class="field"><label>Status</label><select data-field="status"></select></div>
+            <div class="field"><label>Anfragetyp</label><select data-field="requestType"><option>Gemischt</option><option>Einzelkarte</option><option>Slab</option><option>Sealed</option><option>Sammlung</option></select></div>
+            <div class="field"><label>Artikelanzahl</label><input data-field="itemCount" type="number" min="0" step="1"></div>
+            <div class="field"><label>Wunschpreis gesamt</label><input data-field="wantedPrice" type="number" min="0" step="0.01"></div>
+            <div class="field"><label>Bester Gesamtpreis</label><input data-field="bestTotalPrice" type="number" min="0" step="0.01"></div>
+            <div class="field"><label>Dein Angebot</label><input data-field="ownOffer" type="number" min="0" step="0.01"></div>
+            <div class="field"><label>Auszahlung</label><select data-field="payoutMethod"><option value="">Offen</option><option>PayPal</option><option>IBAN</option><option>Anrechnung gegen sealed Produkte</option></select></div>
+            <div class="field full"><label>Bilderlink / Liste</label><input data-field="imageLink"></div>
+            <div class="field full"><label>Kurzbeschreibung</label><textarea data-field="description"></textarea></div>
+            <div class="field full"><label>Produktdetails</label><textarea data-field="productDetails"></textarea></div>
+            <div class="field full"><label>Fehlende Infos</label><textarea data-field="missingInfo"></textarea></div>
+            <div class="field full"><label>Nächster Schritt</label><input data-field="nextStep"></div>
+            <div class="field full"><label>Notiz</label><textarea data-field="note"></textarea></div>
+          </div>
+
+          <div class="btn-row">
+            <button class="primary" type="submit" id="saveBtn">Speichern</button>
+            <button class="secondary" type="button" id="resetBtn">Neu</button>
+            <button class="danger hidden" type="button" id="deleteCurrentBtn">Löschen</button>
+          </div>
+        </form>
+      </aside>
+
+      <section class="card">
+        <h2 id="listTitle">Bulk-Anfragen</h2>
+        <div class="filters">
+          <input id="searchInput" placeholder="Suche nach Name, Mail, Notiz...">
+          <select id="statusFilter"><option value="">Alle Status</option></select>
+          <select id="sortSelect"><option value="dateDesc">Neueste zuerst</option><option value="dateAsc">Älteste zuerst</option><option value="offerDesc">Höchstes Angebot</option><option value="nameAsc">Name A-Z</option></select>
+          <button class="secondary" type="button" id="clearFiltersBtn">Filter leeren</button>
+        </div>
+        <div id="list" class="list"></div>
+        <div id="emptyList" class="empty hidden">Keine Einträge gefunden.</div>
+      </section>
+    </section>
+  </main>
+
+  <div class="modal-backdrop hidden" id="importModal">
+    <section class="modal">
+      <h2>Mail oder Analyse-Export importieren</h2>
+      <p class="small">Du kannst entweder die komplette Mail einfügen oder den JSON-Export aus dem Bulk-Analyse-Tool. Danach wird das Formular gefüllt, gespeichert wird erst mit „Speichern“.</p>
+      <textarea id="importText" placeholder="Mailtext oder JSON-Export hier einfügen"></textarea>
+      <div class="btn-row">
+        <button class="primary" id="applyImportBtn" type="button">In Formular übernehmen</button>
+        <button class="secondary" id="closeImportBtn" type="button">Schließen</button>
+      </div>
+    </section>
+  </div>
+
+  <div class="toast" id="toast">Gespeichert</div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+    import { getDatabase, ref, onValue, set, update, remove, push } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-database.js";
+
+    const PIN = "2212";
+    const firebaseConfig = {
+      apiKey: "AIzaSyA5kq-HiCkVroQLCwwVc24C8XYPJTZvegM",
+      authDomain: "queue-tracker-3fa3c.firebaseapp.com",
+      databaseURL: "https://queue-tracker-3fa3c-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "queue-tracker-3fa3c",
+      storageBucket: "queue-tracker-3fa3c.firebasestorage.app",
+      messagingSenderId: "132132188124",
+      appId: "1:132132188124:web:ecc130f7ee7ac9d61be919",
+      measurementId: "G-3QBWJHGDXG"
+    };
+    const STATUSES = ["Neu","In Prüfung","Rückfrage nötig","Angebot gesendet","Wartet auf Kunde","Angenommen","Abgelehnt","Paket unterwegs","Paket angekommen","Auszahlung offen","Abgeschlossen","Problemfall"];
+    const PATHS = { bulk:"offerTracker/bulk", collections:"offerTracker/collections" };
+    const euro = new Intl.NumberFormat("de-DE",{style:"currency",currency:"EUR"});
+    const num = new Intl.NumberFormat("de-DE");
+
+    const $ = (s, r=document) => r.querySelector(s);
+    const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
+    const els = {
+      login:$("#loginScreen"), pin:$("#pinInput"), loginBtn:$("#loginBtn"), app:$("#app"), sync:$("#syncStatus"), lock:$("#lockBtn"), export:$("#exportBtn"),
+      tabs:$$(".tab"), form:$("#entryForm"), entryId:$("#entryId"), bulkForm:$("#bulkForm"), collectionsForm:$("#collectionsForm"), formTitle:$("#formTitle"), listTitle:$("#listTitle"),
+      save:$("#saveBtn"), reset:$("#resetBtn"), del:$("#deleteCurrentBtn"), search:$("#searchInput"), statusFilter:$("#statusFilter"), sort:$("#sortSelect"), clearFilters:$("#clearFiltersBtn"),
+      list:$("#list"), empty:$("#emptyList"), toast:$("#toast"), importBtn:$("#importBtn"), importModal:$("#importModal"), importText:$("#importText"), applyImport:$("#applyImportBtn"), closeImport:$("#closeImportBtn"),
+      kpiOpen:$("#kpiOpen"), kpiSent:$("#kpiSent"), kpiAccepted:$("#kpiAccepted"), kpiTransit:$("#kpiTransit"), kpiPayout:$("#kpiPayout"), kpiOfferValue:$("#kpiOfferValue")
+    };
+
+    let db;
+    let activeTab = "bulk";
+    let data = { bulk:{}, collections:{} };
+    let firebaseReady = false;
+
+    init();
+
+    function init(){
+      fillStatuses();
+      resetForm();
+      if(localStorage.getItem("ccOfferTrackerUnlocked")==="yes") unlock();
+      els.loginBtn.addEventListener("click", checkPin);
+      els.pin.addEventListener("keydown", e => { if(e.key==="Enter") checkPin(); });
+      els.lock.addEventListener("click", () => { localStorage.removeItem("ccOfferTrackerUnlocked"); location.reload(); });
+      els.tabs.forEach(t => t.addEventListener("click", () => switchTab(t.dataset.tab)));
+      els.form.addEventListener("submit", saveEntry);
+      els.reset.addEventListener("click", resetForm);
+      els.del.addEventListener("click", deleteCurrent);
+      [els.search, els.statusFilter, els.sort].forEach(x => x.addEventListener("input", render));
+      els.clearFilters.addEventListener("click", () => { els.search.value=""; els.statusFilter.value=""; els.sort.value="dateDesc"; render(); });
+      els.export.addEventListener("click", exportCsv);
+      els.importBtn.addEventListener("click", () => { els.importModal.classList.remove("hidden"); els.importText.focus(); });
+      els.closeImport.addEventListener("click", () => els.importModal.classList.add("hidden"));
+      els.applyImport.addEventListener("click", applyImport);
+    }
+
+    function fillStatuses(){
+      $$("select[data-field='status']").forEach(select => select.innerHTML = STATUSES.map(s => `<option>${esc(s)}</option>`).join(""));
+      els.statusFilter.innerHTML = '<option value="">Alle Status</option>' + STATUSES.map(s => `<option>${esc(s)}</option>`).join("");
+    }
+
+    function checkPin(){
+      if(els.pin.value===PIN){ localStorage.setItem("ccOfferTrackerUnlocked","yes"); unlock(); }
+      else { showToast("Falsche PIN"); els.pin.value=""; els.pin.focus(); }
+    }
+
+    function unlock(){
+      els.login.classList.add("hidden"); els.app.classList.remove("hidden"); setupFirebase();
+    }
+
+    function setupFirebase(){
+      if(firebaseReady) return;
+      try{
+        const app = initializeApp(firebaseConfig);
+        db = getDatabase(app);
+        onValue(ref(db, PATHS.bulk), snap => { data.bulk = snap.val() || {}; firebaseReady=true; els.sync.textContent="Verbunden"; render(); });
+        onValue(ref(db, PATHS.collections), snap => { data.collections = snap.val() || {}; firebaseReady=true; els.sync.textContent="Verbunden"; render(); });
+      }catch(err){ console.error(err); els.sync.textContent="Firebase-Fehler"; showToast("Firebase-Fehler"); }
+    }
+
+    function switchTab(tab){
+      activeTab = tab;
+      els.tabs.forEach(t => t.classList.toggle("active", t.dataset.tab===tab));
+      els.bulkForm.classList.toggle("hidden", tab!=="bulk");
+      els.collectionsForm.classList.toggle("hidden", tab==="bulk");
+      els.formTitle.textContent = tab==="bulk" ? "Bulk-Anfrage erfassen" : "Sammlungsangebot erfassen";
+      els.listTitle.textContent = tab==="bulk" ? "Bulk-Anfragen" : "Sammlungen / Einzelankauf";
+      resetForm(); render();
+    }
+
+    function activeForm(){ return activeTab==="bulk" ? els.bulkForm : els.collectionsForm; }
+    function entries(tab=activeTab){ return Object.entries(data[tab]||{}).map(([id,e]) => ({id,...e})); }
+    function today(){ return new Date().toISOString().slice(0,10); }
+
+    function readForm(){
+      const values = {};
+      $$("[data-field]", activeForm()).forEach(f => values[f.dataset.field] = f.value || "");
+      return {...values, type:activeTab, updatedAt:new Date().toISOString()};
+    }
+
+    function setForm(values){
+      $$("[data-field]", activeForm()).forEach(f => {
+        const v = values[f.dataset.field];
+        if(v !== undefined && v !== null) f.value = v;
+      });
+    }
+
+    async function saveEntry(e){
+      e.preventDefault();
+      if(!db){ showToast("Firebase noch nicht verbunden"); return; }
+      const values = readForm();
+      values.name = values.name || "Unbenannt";
+      values.status = values.status || "Neu";
+      const id = els.entryId.value;
+      try{
+        if(id){
+          await update(ref(db, `${PATHS[activeTab]}/${id}`), values);
+          showToast("Aktualisiert");
+        }else{
+          const newRef = push(ref(db, PATHS[activeTab]));
+          values.createdAt = new Date().toISOString();
+          await set(newRef, values);
+          showToast("Gespeichert");
+        }
+        resetForm();
+      }catch(err){
+        console.error(err);
+        showToast("Speichern fehlgeschlagen. Firebase-Regeln prüfen.");
+      }
+    }
+
+    function resetForm(){
+      els.form.reset(); els.entryId.value=""; els.del.classList.add("hidden"); els.save.textContent="Speichern";
+      $$("[data-field='date']").forEach(i => i.value=today());
+      $$("[data-field='status']").forEach(s => s.value="Neu");
+    }
+
+    function fillForm(entry){
+      if(entry.type && entry.type !== activeTab) switchTab(entry.type);
+      setTimeout(() => {
+        setForm(entry); els.entryId.value=entry.id; els.del.classList.remove("hidden"); els.save.textContent="Änderungen speichern";
+        window.scrollTo({top:document.querySelector(".layout").offsetTop-10, behavior:"smooth"});
+      }, 0);
+    }
+
+    async function deleteCurrent(){
+      const id = els.entryId.value; if(!id) return;
+      if(!confirm("Diesen Eintrag wirklich löschen?")) return;
+      try{ await remove(ref(db, `${PATHS[activeTab]}/${id}`)); resetForm(); showToast("Gelöscht"); }
+      catch(err){ console.error(err); showToast("Löschen fehlgeschlagen"); }
+    }
+
+    function render(){
+      renderDashboard();
+      let arr = entries();
+      const q = norm(els.search.value), st = els.statusFilter.value, sort = els.sort.value;
+      if(q) arr = arr.filter(e => norm(Object.values(e).join(" ")).includes(q));
+      if(st) arr = arr.filter(e => e.status===st);
+      arr.sort((a,b) => {
+        if(sort==="dateAsc") return String(a.date||"").localeCompare(String(b.date||""));
+        if(sort==="offerDesc") return money(b.ownOffer)-money(a.ownOffer);
+        if(sort==="nameAsc") return String(a.name||"").localeCompare(String(b.name||""));
+        return String(b.date||"").localeCompare(String(a.date||""));
+      });
+      els.list.innerHTML="";
+      els.empty.classList.toggle("hidden", arr.length>0);
+      arr.forEach(e => els.list.appendChild(entryCard(e)));
+    }
+
+    function renderDashboard(){
+      const all = [...entries("bulk"),...entries("collections")];
+      const open = all.filter(e => ["Neu","In Prüfung","Rückfrage nötig","Wartet auf Kunde"].includes(e.status)).length;
+      const sent = all.filter(e => e.status==="Angebot gesendet").length;
+      const accepted = all.filter(e => e.status==="Angenommen").length;
+      const transit = all.filter(e => e.status==="Paket unterwegs").length;
+      const payout = all.filter(e => e.status==="Auszahlung offen").length;
+      const offerValue = all.filter(e => !["Abgelehnt","Abgeschlossen"].includes(e.status)).reduce((s,e)=>s+money(e.ownOffer),0);
+      els.kpiOpen.textContent=num.format(open); els.kpiSent.textContent=num.format(sent); els.kpiAccepted.textContent=num.format(accepted); els.kpiTransit.textContent=num.format(transit); els.kpiPayout.textContent=num.format(payout); els.kpiOfferValue.textContent=euro.format(offerValue);
+    }
+
+    function entryCard(e){
+      const div=document.createElement("article"); div.className="item";
+      const statusClass=statusToClass(e.status);
+      if(activeTab==="bulk"){
+        div.innerHTML = `
+          <div class="item-head"><div class="item-title"><strong>${esc(e.name||"Unbenannt")}</strong><span>${esc(e.email||"Keine E-Mail")} · ${formatDate(e.date)} · Bulk</span></div><div class="item-actions"><span class="status ${statusClass}">${esc(e.status||"Neu")}</span><button class="mini secondary" data-a="copy">Antwort</button><button class="mini blue" data-a="edit">Bearbeiten</button></div></div>
+          <div class="meta-grid"><div class="meta"><span>Karten</span><strong>${num.format(intVal(e.cardCount))}</strong></div><div class="meta"><span>Rechnerwert</span><strong>${euro.format(money(e.calcValue))}</strong></div><div class="meta"><span>Score</span><strong>${esc(e.score||"–")}</strong></div><div class="meta"><span>Empfohlen</span><strong>${euro.format(money(e.recommendedOffer))}</strong></div><div class="meta"><span>Dein Angebot</span><strong>${euro.format(money(e.ownOffer))}</strong></div></div>
+          ${renderSplit(e.splitDetails)}
+          ${e.issues?`<div class="detail"><strong>Auffälligkeiten:</strong>\n${esc(e.issues)}</div>`:""}
+          ${e.nextStep?`<div class="detail"><strong>Nächster Schritt:</strong> ${esc(e.nextStep)}</div>`:""}`;
+      }else{
+        div.innerHTML = `
+          <div class="item-head"><div class="item-title"><strong>${esc(e.name||"Unbenannt")}</strong><span>${esc(e.email||"Keine E-Mail")} · ${formatDate(e.date)} · ${esc(e.requestType||"Gemischt")}</span></div><div class="item-actions"><span class="status ${statusClass}">${esc(e.status||"Neu")}</span><button class="mini secondary" data-a="copy">Antwort</button><button class="mini blue" data-a="edit">Bearbeiten</button></div></div>
+          <div class="meta-grid"><div class="meta"><span>Artikel</span><strong>${num.format(intVal(e.itemCount))}</strong></div><div class="meta"><span>Wunschpreis</span><strong>${euro.format(money(e.wantedPrice))}</strong></div><div class="meta"><span>Bester Gesamtpreis</span><strong>${euro.format(money(e.bestTotalPrice))}</strong></div><div class="meta"><span>Dein Angebot</span><strong>${euro.format(money(e.ownOffer))}</strong></div><div class="meta"><span>Auszahlung</span><strong>${esc(e.payoutMethod||"Offen")}</strong></div></div>
+          ${e.description?`<div class="detail"><strong>Beschreibung:</strong>\n${esc(e.description)}</div>`:""}
+          ${e.productDetails?`<div class="detail"><strong>Produktdetails:</strong>\n${esc(e.productDetails)}</div>`:""}
+          ${e.missingInfo?`<div class="detail"><strong>Fehlende Infos:</strong>\n${esc(e.missingInfo)}</div>`:""}
+          ${e.imageLink?`<div class="detail"><strong>Bilderlink:</strong> ${esc(e.imageLink)}</div>`:""}
+          ${e.nextStep?`<div class="detail"><strong>Nächster Schritt:</strong> ${esc(e.nextStep)}</div>`:""}`;
+      }
+      $("[data-a='edit']",div).addEventListener("click",()=>fillForm(e));
+      $("[data-a='copy']",div).addEventListener("click",()=>copy(buildReply(e)));
+      return div;
+    }
+
+    function renderSplit(text){
+      const rows = parseSplitRows(text);
+      if(!rows.length) return text ? `<div class="detail"><strong>Split:</strong>\n${esc(text)}</div>` : "";
+      return `<div class="detail"><strong>Split:</strong><table class="split-table"><thead><tr><th>Kategorie</th><th class="right">Menge</th><th class="right">Wert</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.label)}</td><td class="right">${r.qty?num.format(r.qty):"–"}</td><td class="right">${r.total?euro.format(r.total):"–"}</td></tr>`).join("")}</tbody></table></div>`;
+    }
+
+    function parseSplitRows(text){
+      if(!text) return [];
+      return String(text).split(/\n+/).map(line=>line.trim()).filter(Boolean).map(line=>{
+        const m=line.match(/^(.*?)(?::|\|)\s*([\d.]+)?(?:\s*(?:x|Stk\.?|Karten))?.*?(?:=\s*)?([\d.,]+)\s*€?$/i);
+        if(m) return {label:m[1].trim(), qty:intVal(m[2]), total:parseEuro(m[3])};
+        const m2=line.match(/^(.*?)\s*:\s*([\d.]+)$/);
+        if(m2) return {label:m2[1].trim(), qty:intVal(m2[2]), total:0};
+        return {label:line, qty:0, total:0};
+      });
+    }
+
+    function applyImport(){
+      const text = els.importText.value.trim();
+      if(!text){ showToast("Kein Text eingefügt"); return; }
+      let values;
+      try{
+        const parsed = JSON.parse(text);
+        values = normalizeImportPackage(parsed);
+      }catch{
+        values = activeTab==="bulk" ? parseBulkMail(text) : parseCollectionMail(text);
+      }
+      setForm(values);
+      els.importModal.classList.add("hidden");
+      els.importText.value="";
+      showToast("Import ins Formular übernommen");
+    }
+
+    function normalizeImportPackage(pkg){
+      const type = pkg.type || activeTab;
+      if(type !== activeTab) switchTab(type);
+      if(type==="bulk" || activeTab==="bulk"){
+        return {
+          name: pkg.name || "",
+          email: pkg.email || "",
+          date: pkg.date || today(),
+          status: pkg.status || "Neu",
+          cardCount: pkg.cardCount || pkg.statedCards || "",
+          calcValue: pkg.calcValue || pkg.statedValue || "",
+          score: pkg.score || pkg.grade || "",
+          recommendedOffer: pkg.recommendedOffer || "",
+          ownOffer: pkg.ownOffer || pkg.recommendedOffer || "",
+          shippingStatus: pkg.shippingStatus || "",
+          payoutMethod: pkg.payoutMethod || "",
+          splitDetails: pkg.splitDetails || buildSplitFromPositions(pkg.positions || []),
+          issues: pkg.issues || (Array.isArray(pkg.cons) ? pkg.cons.join("\n") : ""),
+          sourceText: pkg.sourceText || pkg.raw || "",
+          nextStep: pkg.nextStep || "Angebot prüfen / senden",
+          note: pkg.note || ""
+        };
+      }
+      return {
+        name: pkg.name || "",
+        email: pkg.email || "",
+        date: pkg.date || today(),
+        status: pkg.status || "Neu",
+        requestType: pkg.requestType || "Gemischt",
+        itemCount: pkg.itemCount || "",
+        wantedPrice: pkg.wantedPrice || "",
+        bestTotalPrice: pkg.bestTotalPrice || "",
+        ownOffer: pkg.ownOffer || "",
+        payoutMethod: pkg.payoutMethod || "",
+        imageLink: pkg.imageLink || "",
+        description: pkg.description || "",
+        productDetails: pkg.productDetails || "",
+        missingInfo: pkg.missingInfo || "",
+        nextStep: pkg.nextStep || "Anfrage prüfen",
+        note: pkg.note || ""
+      };
+    }
+
+    function parseBulkMail(text){
+      const compact = text.replace(/\s+/g," ").trim();
+      const positions = [];
+      const posRe = /((?:pokémon|pokemon)\s+(?:deutsch|englisch|japanisch)|sonstiges\s*&\s*zubehör|sonstiges\s*&\s*zubehoer)\s*:\s*(.*?)\s*:\s*([\d.]+)\s*x\s*([\d.,]+)\s*€\s*=\s*([\d.,]+)\s*€/gi;
+      let m; while((m=posRe.exec(compact))!==null){
+        positions.push({label:`${m[1].replace(/^pokemon/i,"Pokémon")}: ${m[2].trim()}`, qty:intVal(m[3]), unitPrice:parseEuro(m[4]), total:parseEuro(m[5])});
+      }
+      const email = (text.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i)||[])[0] || "";
+      const name = extractName(text);
+      return {
+        name, email, date:today(), status:"Neu",
+        cardCount:intVal((compact.match(/kartenmenge\s*:\s*([\d.]+)/i)||[])[1]),
+        calcValue:parseEuro((compact.match(/voraussichtliche\s+auszahlung\s*:\s*([\d.,]+\s*€?)/i)||[])[1]),
+        shippingStatus:((compact.match(/versandstatus\s*:\s*(.*?)(?=\s+positionen\s*:|\s+kundennachricht\s*:|\s+bestätigung|\s+bestaetigung|$)/i)||[])[1]||"").trim(),
+        splitDetails:buildSplitFromPositions(positions),
+        sourceText:text,
+        nextStep:"Analyse prüfen / Angebot senden"
+      };
+    }
+
+    function parseCollectionMail(text){
+      const email = (text.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i)||[])[0] || "";
+      const name = extractName(text);
+      const compact = text.replace(/\s+/g," ").trim();
+      const payout = findAfter(compact, /gewünschte\s+auszahlung\s*:\s*(.*?)(?=\s+[A-ZÄÖÜ][a-zäöüß ]+\s*:|$)/i);
+      const img = (text.match(/https?:\/\/[^\s<>"']+/i)||[])[0] || "";
+      const wanted = parseEuro(findAfter(compact, /wunschpreis(?:\s+gesamt)?(?:\s+aus\s+einzelpositionen)?\s*:\s*([\d.,]+\s*€?)/i));
+      const best = parseEuro(findAfter(compact, /(?:bester\s+gesamtpreis|gesamtpreis\s+bei\s+komplettabnahme).*?:\s*([\d.,]+\s*€?)/i));
+      return {
+        name, email, date:today(), status:"Neu",
+        requestType: detectCollectionType(text),
+        itemCount:intVal(findAfter(compact, /(?:anzahl\s+artikel|artikelanzahl)\s*:\s*([\d.]+)/i)),
+        wantedPrice:wanted || "",
+        bestTotalPrice:best || "",
+        payoutMethod:payout || "",
+        imageLink:img,
+        description:firstMeaningfulLines(text, 4),
+        productDetails:text,
+        missingInfo: norm(text).includes("nicht angegeben") ? "Einige Felder wurden als nicht angegeben erkannt. Bitte Details prüfen." : "",
+        nextStep:"Anfrage prüfen"
+      };
+    }
+
+    function extractName(text){
+      const patterns=[/name\s*:\s*([^\n\r]+)/i,/von\s*:\s*("?)([^"<\n\r]+)\1\s*<[^>]+>/i,/from\s*:\s*("?)([^"<\n\r]+)\1\s*<[^>]+>/i];
+      for(const p of patterns){ const m=text.match(p); if(m){ return (m[2]||m[1]||"").trim().replace(/^["']|["']$/g,""); } }
+      return "";
+    }
+
+    function findAfter(text, regex){ const m=text.match(regex); return m ? (m[1]||"").trim() : ""; }
+    function detectCollectionType(text){ const n=norm(text); if(n.includes("slab")) return "Slab"; if(n.includes("sealed")||n.includes("display")||n.includes("etb")) return "Sealed"; if(n.includes("einzelkarte")) return "Einzelkarte"; if(n.includes("sammlung")) return "Sammlung"; return "Gemischt"; }
+    function firstMeaningfulLines(text, max){ return text.split(/\n+/).map(x=>x.trim()).filter(x=>x && !x.includes("@")).slice(0,max).join("\n"); }
+    function buildSplitFromPositions(positions){ return positions.map(p => `${p.label}: ${p.qty || 0} | ${euro.format(p.total || 0)}`).join("\n"); }
+
+    function buildReply(e){
+      let t=`Hi${e.name ? " " + e.name : ""},\n\n`;
+      if(money(e.ownOffer)>0) t+=`vielen Dank für deine Anfrage. Auf Basis deiner Angaben können wir dir vorbehaltlich finaler Prüfung aktuell ${euro.format(money(e.ownOffer))} anbieten.\n\n`;
+      else t+="vielen Dank für deine Anfrage. Wir haben deine Angaben erhalten und prüfen sie als Nächstes.\n\n";
+      if(activeTab==="bulk"){
+        t+="Wichtig ist, dass die Karten echt, korrekt sortiert und im Zustand Near Mint sind. Die finale Bestätigung erfolgt nach Eingang und Prüfung der Karten.\n\n";
+        t+=intVal(e.cardCount)>=3000 ? "Da deine Anfrage mindestens 3.000 Karten umfasst, können wir den Versand nach vorheriger Abstimmung übernehmen. Bitte sende noch nichts los, bis du die Versanddetails von uns erhalten hast.\n\n" : "Da die Anfrage unter 3.000 Karten liegt, würdest du den Versand selbst organisieren. Bitte sende trotzdem noch nichts los, bis du die Einsendeadresse und die nächsten Schritte von uns erhalten hast.\n\n";
+      }else{
+        t+="Das Angebot gilt vorbehaltlich Prüfung von Zustand, Echtheit, Vollständigkeit und Übereinstimmung mit deinen Angaben. Bitte sende noch nichts los, bis du die Einsendeadresse und die nächsten Schritte von uns erhalten hast.\n\n";
+      }
+      if(e.nextStep) t+=`Nächster Schritt: ${e.nextStep}\n\n`;
+      return t+"Liebe Grüße\nFabian von ChiefCards";
+    }
+
+    function exportCsv(){
+      const arr=entries();
+      const cols=activeTab==="bulk" ? ["name","email","date","status","cardCount","calcValue","score","recommendedOffer","ownOffer","shippingStatus","payoutMethod","splitDetails","issues","nextStep","note","sourceText"] : ["name","email","date","status","requestType","itemCount","wantedPrice","bestTotalPrice","ownOffer","payoutMethod","imageLink","description","productDetails","missingInfo","nextStep","note"];
+      const rows=[cols.join(";"),...arr.map(e=>cols.map(c=>`"${String(e[c]||"").replace(/"/g,'""')}"`).join(";"))];
+      const blob=new Blob([rows.join("\n")],{type:"text/csv;charset=utf-8"}); const url=URL.createObjectURL(blob); const a=document.createElement("a"); a.href=url; a.download=activeTab==="bulk"?"bulk-angebote.csv":"sammlungs-angebote.csv"; a.click(); URL.revokeObjectURL(url);
+    }
+
+    async function copy(text){ try{ await navigator.clipboard.writeText(text); showToast("Antwort kopiert"); }catch{ showToast("Kopieren nicht möglich"); } }
+    function statusToClass(s){ const n=norm(s); if(n.includes("angenommen")) return "accepted"; if(n.includes("abgeschlossen")) return "done"; if(n.includes("abgelehnt")) return "declined"; if(n.includes("problem")) return "problem"; if(n.includes("wartet")||n.includes("rueckfrage")) return "waiting"; return ""; }
+    function formatDate(v){ if(!v) return "Kein Datum"; const p=String(v).split("-"); return p.length===3?`${p[2]}.${p[1]}.${p[0]}`:v; }
+    function parseEuro(v){ if(!v) return 0; let s=String(v).replace(/\s/g,"").replace(/€/g,"").replace(/[^\d,.-]/g,""); if(s.includes(",")&&s.includes(".")) s=s.replace(/\./g,"").replace(",","."); else if(s.includes(",")) s=s.replace(",","."); const n=parseFloat(s); return Number.isFinite(n)?n:0; }
+    function intVal(v){ const n=parseInt(String(v||"").replace(/[^\d]/g,""),10); return Number.isFinite(n)?n:0; }
+    function money(v){ const n=parseFloat(String(v||"0").replace(",",".")); return Number.isFinite(n)?n:0; }
+    function norm(v){ return String(v||"").toLowerCase().replace(/ä/g,"ae").replace(/ö/g,"oe").replace(/ü/g,"ue").replace(/ß/g,"ss"); }
+    function esc(v){ return String(v||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+    function showToast(t){ els.toast.textContent=t; els.toast.classList.add("show"); setTimeout(()=>els.toast.classList.remove("show"),1800); }
   </script>
 </body>
 </html>
