@@ -48,7 +48,7 @@
     .item-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}.mini{min-height:34px;padding:7px 10px;border-radius:999px;font-size:12px}
     .meta-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}.meta{background:var(--soft);border:1px solid #edf1f8;border-radius:14px;padding:9px;min-width:0}.meta span{display:block;color:var(--muted);font-size:11px;font-weight:850;margin-bottom:3px}.meta strong{display:block;color:var(--text);font-size:13px;overflow-wrap:anywhere}
     .status,.quick-status{display:inline-flex;border-radius:999px;padding:6px 10px;font-size:12px;font-weight:950;background:#eef3ff;color:var(--blue);white-space:nowrap;border:1px solid var(--border);min-height:34px}.quick-status{cursor:pointer;max-width:190px}.status.accepted,.status.done,.quick-status.accepted,.quick-status.done{background:var(--good);color:#14532d}.status.problem,.status.declined,.quick-status.problem,.quick-status.declined{background:var(--bad);color:#991b1b}.status.waiting,.quick-status.waiting{background:var(--warn);color:#5f4100}
-    .entry-details{display:grid;gap:10px}.detail{background:var(--soft);border:1px solid #edf1f8;border-radius:14px;padding:11px;color:var(--text);font-size:13px;line-height:1.45;white-space:pre-wrap}
+    .entry-details{display:grid;gap:10px}.detail{background:var(--soft);border:1px solid #edf1f8;border-radius:14px;padding:11px;color:var(--text);font-size:13px;line-height:1.45;white-space:pre-wrap}.collection-actions{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}.collection-actions button{min-height:34px;padding:7px 10px;border-radius:999px;font-size:12px}.collection-item{border:1px solid var(--border);background:var(--soft);border-radius:16px;padding:12px;margin-top:10px}.collection-item-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}.collection-item-head strong{color:var(--blue)}.collection-item-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.collection-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:4px}.collection-table th,.collection-table td{padding:9px 8px;border-bottom:1px solid #edf1f8;text-align:left;vertical-align:top}.collection-table th{color:var(--blue);font-size:11px;text-transform:uppercase;background:#f4f7fc}
     .split-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:4px}.split-table th,.split-table td{padding:9px 8px;border-bottom:1px solid #edf1f8;text-align:left}.split-table th{color:var(--blue);font-size:11px;text-transform:uppercase;background:#f4f7fc}.right{text-align:right!important;white-space:nowrap}
     .modal-backdrop{position:fixed;inset:0;background:rgba(2,6,23,.55);display:grid;place-items:center;padding:16px;z-index:20}.modal{width:min(760px,100%);background:#fff;border-radius:22px;border:1px solid var(--border);box-shadow:0 24px 80px rgba(0,0,0,.3);padding:18px}.modal textarea{min-height:300px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px}
     .toast{position:fixed;right:18px;bottom:18px;padding:12px 14px;background:#111827;color:#fff;border-radius:14px;box-shadow:0 12px 30px rgba(0,0,0,.22);font-size:14px;opacity:0;transform:translateY(12px);pointer-events:none;transition:opacity .2s ease,transform .2s ease;z-index:50}.toast.show{opacity:1;transform:translateY(0)}
@@ -132,9 +132,22 @@
             <div class="field"><label>Dein Angebot</label><input data-field="ownOffer" type="number" min="0" step="0.01"></div>
             <div class="field"><label>Auszahlung</label><select data-field="payoutMethod"><option value="">Offen</option><option>PayPal</option><option>IBAN</option><option>Anrechnung gegen sealed Produkte</option></select></div>
             <div class="field full"><label>Bilderlink / Liste</label><input data-field="imageLink"></div>
-            <div class="field full"><label>Kurzbeschreibung</label><textarea data-field="description"></textarea></div>
-            <div class="field full"><label>Produktdetails</label><textarea data-field="productDetails"></textarea></div>
-            <div class="field full"><label>Fehlende Infos</label><textarea data-field="missingInfo"></textarea></div>
+            <div class="field full"><label>Kurzbeschreibung</label><textarea data-field="description" placeholder="Kurze Zusammenfassung der Anfrage"></textarea></div>
+
+            <div class="field full">
+              <label>Artikelpositionen</label>
+              <div class="collection-actions">
+                <button type="button" class="secondary" data-add-item="Einzelkarte">+ Einzelkarte</button>
+                <button type="button" class="secondary" data-add-item="Slab">+ Slab</button>
+                <button type="button" class="secondary" data-add-item="Sealed">+ Sealed</button>
+                <button type="button" class="secondary" data-add-item="Sonstiges">+ Sonstiges</button>
+              </div>
+              <div id="collectionItems"></div>
+              <input type="hidden" data-field="itemsJson" id="collectionItemsJson">
+            </div>
+
+            <div class="field full"><label>Fehlende Infos</label><textarea data-field="missingInfo" placeholder="z. B. Rückseitenbilder fehlen, Cert-Nummer fehlt, Preis unklar..."></textarea></div>
+            <div class="field full"><label>Rohtext / Mailimport</label><textarea data-field="sourceText" placeholder="Hier landet die importierte Mail, damit nichts verloren geht."></textarea></div>
             <div class="field full"><label>Nächster Schritt</label><select data-field="nextStep" class="next-step-select"></select></div>
             <div class="field full"><label>Notiz</label><textarea data-field="note"></textarea></div>
           </div>
@@ -219,7 +232,7 @@
       login:$("#loginScreen"), pin:$("#pinInput"), loginBtn:$("#loginBtn"), app:$("#app"), sync:$("#syncStatus"), lock:$("#lockBtn"), export:$("#exportBtn"),
       tabs:$$(".tab"), form:$("#entryForm"), entryId:$("#entryId"), bulkForm:$("#bulkForm"), collectionsForm:$("#collectionsForm"), formTitle:$("#formTitle"), listTitle:$("#listTitle"),
       save:$("#saveBtn"), reset:$("#resetBtn"), del:$("#deleteCurrentBtn"), search:$("#searchInput"), statusFilter:$("#statusFilter"), sort:$("#sortSelect"), clearFilters:$("#clearFiltersBtn"),
-      list:$("#list"), empty:$("#emptyList"), toast:$("#toast"), importBtn:$("#importBtn"), importModal:$("#importModal"), importText:$("#importText"), applyImport:$("#applyImportBtn"), closeImport:$("#closeImportBtn"),
+      list:$("#list"), empty:$("#emptyList"), toast:$("#toast"), collectionItems:$("#collectionItems"), collectionItemsJson:$("#collectionItemsJson"), importBtn:$("#importBtn"), importModal:$("#importModal"), importText:$("#importText"), applyImport:$("#applyImportBtn"), closeImport:$("#closeImportBtn"),
       kpiOpen:$("#kpiOpen"), kpiSent:$("#kpiSent"), kpiAccepted:$("#kpiAccepted"), kpiTransit:$("#kpiTransit"), kpiPayout:$("#kpiPayout"), kpiOfferValue:$("#kpiOfferValue")
     };
 
@@ -248,6 +261,7 @@
       els.importBtn.addEventListener("click", () => { els.importModal.classList.remove("hidden"); els.importText.focus(); });
       els.closeImport.addEventListener("click", () => els.importModal.classList.add("hidden"));
       els.applyImport.addEventListener("click", applyImport);
+      $$("[data-add-item]").forEach(btn => btn.addEventListener("click", () => addCollectionItem(btn.dataset.addItem)));
     }
 
     function fillStatuses(){
@@ -298,7 +312,119 @@
     function entries(tab=activeTab){ return Object.entries(data[tab]||{}).map(([id,e]) => ({id,...e})); }
     function today(){ return new Date().toISOString().slice(0,10); }
 
-    function readForm(){
+    
+    function getCollectionItems(){
+      const items = [];
+      if(!els.collectionItems) return items;
+
+      $$(".collection-item", els.collectionItems).forEach(box => {
+        const item = {};
+        $$("[data-item-field]", box).forEach(field => {
+          item[field.dataset.itemField] = field.value || "";
+        });
+        if(Object.values(item).some(v => String(v || "").trim())) items.push(item);
+      });
+
+      return items;
+    }
+
+    function syncCollectionItemsJson(){
+      if(!els.collectionItemsJson) return;
+      els.collectionItemsJson.value = JSON.stringify(getCollectionItems());
+    }
+
+    function parseItemsJson(value){
+      try{
+        const parsed = JSON.parse(value || "[]");
+        return Array.isArray(parsed) ? parsed : [];
+      }catch{
+        return [];
+      }
+    }
+
+    function addCollectionItem(type = "Sonstiges", values = {}){
+      if(!els.collectionItems) return;
+
+      const item = {
+        type,
+        title: "",
+        set: "",
+        cardNumber: "",
+        language: "",
+        condition: "",
+        gradingCompany: "",
+        grade: "",
+        certNumber: "",
+        quantity: "1",
+        wantedPrice: "",
+        note: "",
+        ...values
+      };
+
+      const box = document.createElement("div");
+      box.className = "collection-item";
+      box.innerHTML = `
+        <div class="collection-item-head">
+          <strong>${esc(type)}</strong>
+          <button type="button" class="mini danger" data-remove-item>Entfernen</button>
+        </div>
+        <div class="collection-item-grid">
+          <div class="field"><label>Typ</label><select data-item-field="type">
+            ${["Einzelkarte","Slab","Sealed","Sammlung","Sonstiges"].map(t => `<option ${t === item.type ? "selected" : ""}>${esc(t)}</option>`).join("")}
+          </select></div>
+          <div class="field"><label>Menge</label><input data-item-field="quantity" type="number" min="0" step="1" value="${esc(item.quantity)}"></div>
+          <div class="field"><label>Name / Produkt</label><input data-item-field="title" value="${esc(item.title)}" placeholder="Kartenname, Slab oder Produkt"></div>
+          <div class="field"><label>Set</label><input data-item-field="set" value="${esc(item.set)}"></div>
+          <div class="field"><label>Kartennummer / Cert</label><input data-item-field="cardNumber" value="${esc(item.cardNumber)}"></div>
+          <div class="field"><label>Sprache</label><input data-item-field="language" value="${esc(item.language)}"></div>
+          <div class="field"><label>Zustand</label><input data-item-field="condition" value="${esc(item.condition)}"></div>
+          <div class="field"><label>Grading / Grade</label><input data-item-field="grade" value="${esc(item.grade)}" placeholder="z. B. PSA 10"></div>
+          <div class="field"><label>Wunschpreis</label><input data-item-field="wantedPrice" type="number" min="0" step="0.01" value="${esc(item.wantedPrice)}"></div>
+          <div class="field"><label>Hinweis</label><input data-item-field="note" value="${esc(item.note)}"></div>
+        </div>
+      `;
+
+      box.querySelector("[data-remove-item]").addEventListener("click", () => {
+        box.remove();
+        syncCollectionItemsJson();
+        updateCollectionItemCount();
+      });
+
+      $$("[data-item-field]", box).forEach(field => {
+        field.addEventListener("input", () => {
+          syncCollectionItemsJson();
+          updateCollectionItemCount();
+        });
+        field.addEventListener("change", () => {
+          syncCollectionItemsJson();
+          updateCollectionItemCount();
+        });
+      });
+
+      els.collectionItems.appendChild(box);
+      syncCollectionItemsJson();
+      updateCollectionItemCount();
+    }
+
+    function renderCollectionItems(items = []){
+      if(!els.collectionItems) return;
+      els.collectionItems.innerHTML = "";
+      items.forEach(item => addCollectionItem(item.type || "Sonstiges", item));
+      syncCollectionItemsJson();
+      updateCollectionItemCount();
+    }
+
+    function updateCollectionItemCount(){
+      if(activeTab !== "collections") return;
+      const count = getCollectionItems().reduce((sum, item) => sum + (intVal(item.quantity) || 1), 0);
+      const input = activeForm().querySelector("[data-field='itemCount']");
+      if(input && count > 0) input.value = count;
+    }
+
+function readForm(){
+      if(activeTab === "collections") {
+        syncCollectionItemsJson();
+      }
       const values = {};
       $$("[data-field]", activeForm()).forEach(f => values[f.dataset.field] = f.value || "");
       return {...values, type:activeTab, updatedAt:new Date().toISOString()};
@@ -317,6 +443,10 @@
           f.value = v;
         }
       });
+
+      if(activeTab === "collections") {
+        renderCollectionItems(parseItemsJson(values.itemsJson));
+      }
     }
 
     async function saveEntry(e){
@@ -348,6 +478,9 @@
       $$("[data-field='date']").forEach(i => i.value=today());
       $$("[data-field='status']").forEach(s => s.value="Neu");
       $$("[data-field='nextStep']").forEach(s => s.value = activeTab === "bulk" ? "Analyse prüfen / Angebot senden" : "Anfrage prüfen");
+      if(activeTab === "collections") {
+        renderCollectionItems([]);
+      }
     }
 
     function fillForm(entry){
@@ -407,7 +540,25 @@
       els.kpiOpen.textContent=num.format(open); els.kpiSent.textContent=num.format(sent); els.kpiAccepted.textContent=num.format(accepted); els.kpiTransit.textContent=num.format(transit); els.kpiPayout.textContent=num.format(payout); els.kpiOfferValue.textContent=euro.format(offerValue);
     }
 
-    function entryCard(e){
+    
+    function renderCollectionItemsTable(entry){
+      const items = parseItemsJson(entry.itemsJson);
+      if(!items.length) return "";
+
+      return `<div class="detail"><strong>Artikelpositionen:</strong><table class="collection-table"><thead><tr><th>Typ</th><th>Artikel</th><th>Menge</th><th>Details</th><th>Wunschpreis</th></tr></thead><tbody>${items.map(item => {
+        const details = [
+          item.set ? "Set: " + item.set : "",
+          item.cardNumber ? "Nr./Cert: " + item.cardNumber : "",
+          item.language ? "Sprache: " + item.language : "",
+          item.condition ? "Zustand: " + item.condition : "",
+          item.grade ? "Grade: " + item.grade : "",
+          item.note ? "Hinweis: " + item.note : ""
+        ].filter(Boolean).join("<br>");
+        return `<tr><td>${esc(item.type || "")}</td><td>${esc(item.title || "Ohne Titel")}</td><td>${esc(item.quantity || "1")}</td><td>${details}</td><td>${item.wantedPrice ? euro.format(money(item.wantedPrice)) : "-"}</td></tr>`;
+      }).join("")}</tbody></table></div>`;
+    }
+
+function entryCard(e){
       const div=document.createElement("article"); 
       div.className="item";
       const statusClass=statusToClass(e.status);
@@ -467,9 +618,10 @@
           </div>
           <div class="entry-details hidden" id="${detailsId}">
             ${e.description?`<div class="detail"><strong>Beschreibung:</strong>\n${esc(e.description)}</div>`:""}
-            ${e.productDetails?`<div class="detail"><strong>Produktdetails:</strong>\n${esc(e.productDetails)}</div>`:""}
+            ${renderCollectionItemsTable(e)}
             ${e.missingInfo?`<div class="detail"><strong>Fehlende Infos:</strong>\n${esc(e.missingInfo)}</div>`:""}
             ${e.imageLink?`<div class="detail"><strong>Bilderlink:</strong> ${esc(e.imageLink)}</div>`:""}
+            ${e.sourceText?`<div class="detail"><strong>Rohtext:</strong>\n${esc(e.sourceText)}</div>`:""}
             ${e.nextStep?`<div class="detail"><strong>Nächster Schritt:</strong> ${esc(e.nextStep)}</div>`:""}
             ${e.note?`<div class="detail"><strong>Notiz:</strong>\n${esc(e.note)}</div>`:""}
           </div>`;
@@ -562,8 +714,9 @@
         payoutMethod: pkg.payoutMethod || "",
         imageLink: pkg.imageLink || "",
         description: pkg.description || "",
-        productDetails: pkg.productDetails || "",
+        itemsJson: pkg.itemsJson || "[]",
         missingInfo: pkg.missingInfo || "",
+        sourceText: pkg.sourceText || pkg.raw || "",
         nextStep: pkg.nextStep || "Anfrage prüfen",
         note: pkg.note || ""
       };
@@ -589,32 +742,78 @@
       };
     }
 
+    function getLabeledValue(text, labels) {
+      const lines = String(text || "").split(/\r?\n/).map(line => line.trim());
+      const normalizedLabels = labels.map(label => label.toLowerCase());
+
+      for(let i = 0; i < lines.length; i++){
+        const current = lines[i].replace(/\s+/g, " ").trim();
+        const lower = current.toLowerCase();
+
+        for(const label of normalizedLabels){
+          if(lower === label + ":" || lower === label){
+            for(let j = i + 1; j < Math.min(lines.length, i + 4); j++){
+              const candidate = lines[j].trim();
+              if(!candidate) continue;
+              if(/^[a-zäöüß\s/()&.-]+:\s*$/i.test(candidate)) break;
+              return candidate;
+            }
+          }
+
+          if(lower.startsWith(label + ":")){
+            const inline = current.slice(current.indexOf(":") + 1).trim();
+            if(inline) return inline;
+          }
+        }
+      }
+
+      return "";
+    }
+
     function parseCollectionMail(text){
-      const email = (text.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i)||[])[0] || "";
-      const name = extractName(text);
       const compact = text.replace(/\s+/g," ").trim();
-      const payout = findAfter(compact, /gewünschte\s+auszahlung\s*:\s*(.*?)(?=\s+[A-ZÄÖÜ][a-zäöüß ]+\s*:|$)/i);
+      const email = getLabeledValue(text, ["E-Mail", "Email", "Mail"]) || ((text.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i)||[])[0] || "");
+      const name = extractName(text);
+      const payout = getLabeledValue(text, ["Auszahlung", "Auszahlungsmethode", "Gewünschte Auszahlung"]) || "";
       const img = (text.match(/https?:\/\/[^\s<>"']+/i)||[])[0] || "";
-      const wanted = parseEuro(findAfter(compact, /wunschpreis(?:\s+gesamt)?(?:\s+aus\s+einzelpositionen)?\s*:\s*([\d.,]+\s*€?)/i));
-      const best = parseEuro(findAfter(compact, /(?:bester\s+gesamtpreis|gesamtpreis\s+bei\s+komplettabnahme).*?:\s*([\d.,]+\s*€?)/i));
+      const wanted = parseEuro(getLabeledValue(text, ["Wunschpreis gesamt", "Wunschpreis", "Gesamt-Wunschpreis"]) || findAfter(compact, /wunschpreis(?:\s+gesamt)?(?:\s+aus\s+einzelpositionen)?\s*:\s*([\d.,]+\s*€?)/i));
+      const best = parseEuro(getLabeledValue(text, ["Bester Gesamtpreis", "Bester Gesamtpreis bei Komplettabnahme", "Gesamtpreis bei Komplettabnahme"]) || findAfter(compact, /(?:bester\s+gesamtpreis|gesamtpreis\s+bei\s+komplettabnahme).*?:\s*([\d.,]+\s*€?)/i));
+      const itemCount = intVal(getLabeledValue(text, ["Artikelanzahl", "Anzahl Artikel"]) || findAfter(compact, /(?:anzahl\s+artikel|artikelanzahl)\s*:\s*([\d.]+)/i));
+      const requestType = getLabeledValue(text, ["Anfragetyp"]) || detectCollectionType(text);
+
       return {
         name, email, date:today(), status:"Neu",
-        requestType: detectCollectionType(text),
-        itemCount:intVal(findAfter(compact, /(?:anzahl\s+artikel|artikelanzahl)\s*:\s*([\d.]+)/i)),
+        requestType,
+        itemCount:itemCount || "",
         wantedPrice:wanted || "",
         bestTotalPrice:best || "",
         payoutMethod:payout || "",
         imageLink:img,
         description:firstMeaningfulLines(text, 4),
-        productDetails:text,
+        itemsJson:"[]",
         missingInfo: norm(text).includes("nicht angegeben") ? "Einige Felder wurden als nicht angegeben erkannt. Bitte Details prüfen." : "",
+        sourceText:text,
         nextStep:"Anfrage prüfen"
       };
     }
 
     function extractName(text){
-      const patterns=[/name\s*:\s*([^\n\r]+)/i,/von\s*:\s*("?)([^"<\n\r]+)\1\s*<[^>]+>/i,/from\s*:\s*("?)([^"<\n\r]+)\1\s*<[^>]+>/i];
-      for(const p of patterns){ const m=text.match(p); if(m){ return (m[2]||m[1]||"").trim().replace(/^["']|["']$/g,""); } }
+      const labeled = getLabeledValue(text, ["Name", "Kundenname"]);
+      if(labeled && !labeled.includes("@")) return labeled.replace(/^["']|["']$/g, "").trim();
+
+      const raw = String(text || "");
+      const patterns=[
+        /(?:^|\n)\s*from\s*:\s*("?)([^"<\n\r]+)\1\s*<[^>]+>/i,
+        /(?:^|\n)\s*von\s*:\s*("?)([^"<\n\r]+)\1\s*<[^>]+>/i
+      ];
+
+      for(const p of patterns){
+        const m=raw.match(p);
+        if(m){
+          const value=(m[2]||m[1]||"").trim().replace(/^["']|["']$/g,"");
+          if(value && !value.includes("@")) return value;
+        }
+      }
       return "";
     }
 
@@ -661,7 +860,27 @@
         }];
       }
 
-      const lines = String(entry.productDetails || entry.description || "Sammlung / Einzelankauf")
+      const items = parseItemsJson(entry.itemsJson);
+      if(items.length){
+        return items.map(item => {
+          const details = [
+            item.title || item.type || "Artikel",
+            item.set ? "Set: " + item.set : "",
+            item.cardNumber ? "Nr./Cert: " + item.cardNumber : "",
+            item.language ? "Sprache: " + item.language : "",
+            item.condition ? "Zustand: " + item.condition : "",
+            item.grade ? "Grade: " + item.grade : ""
+          ].filter(Boolean).join(" | ");
+
+          return {
+            title: details,
+            qty: item.quantity || "1",
+            amount: 0
+          };
+        });
+      }
+
+      const lines = String(entry.description || "Sammlung / Einzelankauf")
         .split(/\n+/)
         .map(line => line.trim())
         .filter(Boolean)
@@ -895,7 +1114,7 @@
 
     function exportCsv(){
       const arr=entries();
-      const cols=activeTab==="bulk" ? ["name","email","date","status","cardCount","calcValue","score","recommendedOffer","ownOffer","shippingStatus","payoutMethod","splitDetails","issues","nextStep","note","sourceText"] : ["name","email","date","status","requestType","itemCount","wantedPrice","bestTotalPrice","ownOffer","payoutMethod","imageLink","description","productDetails","missingInfo","nextStep","note"];
+      const cols=activeTab==="bulk" ? ["name","email","date","status","cardCount","calcValue","score","recommendedOffer","ownOffer","shippingStatus","payoutMethod","splitDetails","issues","nextStep","note","sourceText"] : ["name","email","date","status","requestType","itemCount","wantedPrice","bestTotalPrice","ownOffer","payoutMethod","imageLink","description","itemsJson","missingInfo","sourceText","nextStep","note"];
       const rows=[cols.join(";"),...arr.map(e=>cols.map(c=>`"${String(e[c]||"").replace(/"/g,'""')}"`).join(";"))];
       const blob=new Blob([rows.join("\n")],{type:"text/csv;charset=utf-8"}); const url=URL.createObjectURL(blob); const a=document.createElement("a"); a.href=url; a.download=activeTab==="bulk"?"bulk-angebote.csv":"sammlungs-angebote.csv"; a.click(); URL.revokeObjectURL(url);
     }
